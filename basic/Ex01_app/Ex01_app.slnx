@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Prac04Collection/Prac04Collection.csproj" />
+  <Project Path="Prac05Exception/Prac05Exception.csproj" />
+  <Project Path="Prac06Arrange/Prac06Arrange.csproj" />
+</Solution>
