@@ -1,3 +1,7 @@
+using System.Drawing;
+using System.ComponentModel;
+using System.Text;
+
 namespace DotNet04ControlsApp
 {
     public partial class FrmMain : Form
@@ -18,6 +22,8 @@ namespace DotNet04ControlsApp
 
             TxtResult.Text = "현재 글씨체 / Fonts ";
             PrgStatus.Value = 0; // 0으로 초기화
+
+            BtnStop.Enabled = false; // 최초 실행시 중지버튼 비활성화
         }
 
         private void ChkItalic_CheckedChanged(object sender, EventArgs e)
@@ -180,10 +186,171 @@ namespace DotNet04ControlsApp
             {
                 PicImage.SizeMode = PictureBoxSizeMode.StretchImage;
             }
-            else {
+            else
+            {
                 PicImage.SizeMode = PictureBoxSizeMode.CenterImage;
-            
 
+
+            }
+        }
+
+        // 스레드 없이 진행
+        private void BtnNoThread_Click(object sender, EventArgs e)
+        {
+            // 진행바 초기화
+            var maximum = 100;
+            var minimum = 0;
+            var currValue = 0;
+            TxtLog.Clear();
+            PrgProcess.Minimum = minimum;
+            PrgProcess.Maximum = maximum;
+            PrgProcess.Value = 0;
+
+            BtnThread.Enabled = false;
+            BtnNoThread.Enabled = false;
+            BtnStop.Enabled = true;
+
+            // 프로세스 진행 더미로 실행
+            for (int i = 0; i < maximum; i++)
+            {
+                // 내부적으로 복잡하고 시간이 많이 소요되는 작업
+                currValue = i;
+                PrgProcess.Value = currValue; // 진행바 업데이트
+                // 윈도우의 경우 \n만으로 기능 안 됨. \r\n 둘다 사용 필요
+                TxtLog.AppendText($"진행사항: {currValue}\r\n");
+                Thread.Sleep(500); // 0.5초 대기. 실제로는 업무로직이 들어감
+            }
+
+            BtnNoThread.Enabled = BtnThread.Enabled = true;
+            BtnStop.Enabled = false;
+        }
+
+        // 스레드로 진행
+        private void BtnThread_Click(object sender, EventArgs e)
+        {
+            // 진행바 초기화
+            var maximum = 100;
+            var minimum = 0;
+            var currValue = 0;
+            TxtLog.Clear();
+            PrgProcess.Minimum = minimum;
+            PrgProcess.Maximum = maximum;
+            PrgProcess.Value = 0;
+
+            BtnThread.Enabled = false;
+            BtnNoThread.Enabled = false;
+            BtnStop.Enabled = true;
+
+            // 내부처리 작업을 백그라운드워커에 이벤트로 분리해야 함
+            WrkProcess.WorkerReportsProgress = true; // 진행사항 리포트 활성화
+            WrkProcess.WorkerSupportsCancellation = true; // 백그라운드워커 중간 취소 활성화
+            WrkProcess.RunWorkerAsync(null); // 백그라운드워커 실행! (DoWork)
+        }
+
+        // 스레드 종료
+        private void BtnStop_Click(object sender, EventArgs e)
+        {
+            // 백그라운드워커의 Canceled 속성값을 true로 변경
+            WrkProcess.CancelAsync(); // Async 비동기로 취소처리
+        }
+
+        #region '백그라운드워커 이벤트핸들러'
+
+        // 1. 백그라운드워커 첫 시작점
+        private void WrkProcess_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            var maximum = 100;
+            var currValue = 0.0; // 실수형
+
+            for (int i = 0; i <= maximum; i++)
+            {
+                if (WrkProcess.CancellationPending)
+                {
+                    e.Cancel = true;
+                    break;
+                }
+                else
+                {
+                    currValue = i;
+                    Thread.Sleep(100);
+                    // 진행사항은 ProgressChanged 이벤트핸들러로 전달
+                    WrkProcess.ReportProgress((int)((currValue / maximum) * 100));
+                }
+            }
+        }
+
+        // 2. 프로세스 변경사항 UI로 전달
+        private void WrkProcess_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            // UI 스레드에 넘길값들만 실행!
+            PrgProcess.Value = e.ProgressPercentage;
+            TxtLog.AppendText($"진행사항: {PrgProcess.Value}\r\n");
+
+        }
+
+        // 3. 프로세스가 끝난 뒤 처리
+        private void WrkProcess_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+
+            if (e.Cancelled)
+            {
+                TxtLog.AppendText("작업 취소!\r\n");
+            }
+            else
+            {
+                TxtLog.AppendText("작업 완료!\r\n");
+            }
+            BtnNoThread.Enabled = BtnThread.Enabled = true;
+            BtnStop.Enabled = false;
+        }
+
+        #endregion
+
+
+        #region '텍스트파일 읽고 쓰기'
+
+        private void BtnFileLoad_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Multiselect = false; // 여러파일 선택 여부
+            // 다이얼로그 필터 작업
+            dlg.Filter = "Text Files(*.txt;*cs;*.py;*sql)|*.txt;*.cs;*.py;*.sql|RichText file(*.rtf)|rtf";
+            if (dlg.ShowDialog(this) == DialogResult.OK)
+            {
+                // 확장자가 rtf면
+                // UTF-8 한글깨짐. EUC-KR, UTF-8(BOM) 문제 없음
+                // RtbEditor.LoadFile(dlg.FileName, RichTextBoxStreamType.PlainText);
+                // RichTextBox 포맷으로 변경
+
+                string fileContent = File.ReadAllText(dlg.FileName, Encoding.UTF8);
+                RtbEditor.Text = fileContent;
+            }
+        }
+
+        private void BtnFileSave_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Filter = "RichText file(*.rtf)|*.rtf";
+            if (dlg.ShowDialog(this) == DialogResult.OK)
+            {
+                RtbEditor.SaveFile(dlg.FileName, RichTextBoxStreamType.RichNoOleObjs);
+            }
+        }
+
+        #endregion
+
+
+        /// <summary>
+        /// 폼 종료할 때 종료여부 체크
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FrmMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            var res = MessageBox.Show("정말 종료하시겠습니까?", "종료여부", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (res == DialogResult.No) { 
+                e.Cancel = true; // 폼 종료 취소
             }
         }
     }
