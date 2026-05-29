@@ -181,7 +181,7 @@ IoT 개발자 닷넷 리포지토리(기본, 중급, 응용, 프로젝트)
     - 윈도우 애플리케이션(WinApp), 웹앱(WebApp), Unity, 모바일(MAUI), 키오스크(WPF) 개발함
     - GUI(Graphic User Interface) 활용
 
-### 윈앱
+## 윈앱
 
 - WinForms, Window Application, GUI ... -> `WinApp`으로 통일
     - Windows Forms: 가장 오래된 웹앱개발 방식
@@ -278,6 +278,7 @@ IoT 개발자 닷넷 리포지토리(기본, 중급, 응용, 프로젝트)
 - 비동기화 복사는 다른 이벤트 가능
 ![alt text](image-10.png)
 
+
 ### DB 연동 앱
 - MySQL bookrentalshop 연동
 
@@ -304,11 +305,105 @@ IoT 개발자 닷넷 리포지토리(기본, 중급, 응용, 프로젝트)
 
 ![alt text](image-11.png)
 
+
+### DB연동 앱 - 데이터 추가, 수정, 삭제
+- INSERT, UPDATE, DELETE 기능 구현
+
+![alt text](image-12.png)
+
+
+#### C# 개발 Tip
+- C# 문법 중 새 객체 생성할 때 초기화 방법
+
+    ```cs
+    // 전통적인 속성 할당 방식 객체 생성방식
+    // book_idx 
+    DataGridViewTextBoxColumn colBookIdx = new DataGridViewTextBoxColumn();
+    colBookIdx.Name = "book_idx";
+    colBookIdx.HeaderText = "순번"; // 화면표시 컬럼명
+    colBookIdx.DataPropertyName = "book_idx";
+    colBookIdx.ReadOnly = true;  // PK는 수정하면 안됨!!
+    ```
+    
+    ```cs
+    // C# 3.0 이후 객체 이니셜라이저 방식
+    // book_idx 
+    DataGridViewTextBoxColumn colBookIdx = new 
+    DataGridViewTextBoxColumn
+    {
+        Name = "book_idx",
+        HeaderText = "순번", // 화면표시 컬럼명
+        DataPropertyName = "book_idx",
+        ReadOnly = true  // PK는 수정하면 안됨!!
+    };
+    ```
+
+## 웹앱
+
+### 서버 클라이언트
+
+![alt text](image-13.png)
+
+### 웹 서비스
+
+- 통칭해서 웹 서버와 API 서비스 모두 웹 서비스라고 칭함
+- API 서버 - 데이터만 전달하는 형태의 웹 서비스
+    - 공공데이터포털, 네이버API, 구글API
+
+### 일반 웹서버
+- HTML, CSS, Js 사용 웹화면 개발 + 백엔드
+- ASP.NET, Spring Boot 등을 사용해서 기본적인 웹서버 개발
+- 네이버, 구글, 기업 홈페이지...
+
+### ASP.NET
+1. 새 프로젝트 - ASP.NET Core 웹앱(MVC) 선택
+2. 프로젝트명, 위치, 솔루션명 여비력 다음
+3. 프레임워크 선택, 인증 유형 없음, HTTPS 체크, 최상위문 사용 안함 쳌,
+- 나머지는 기존 상태 그래도 만들기
+
+![alt text](image-14.png)
+
+### ASP.NET API서버
+1. 새 프로젝트 - ASP.NET Core 웹 API
+2. 위와 동일
+3. OpenAPI, 컨트롤러 사용 체크 나머지 동일
+4. 서버 실행
+    - Get으로 데이터 조회
+    - 서버 상태 확인 
+
+    ![alt text](image-15.png)
+
+5. `PostMan`으로 Http메서드 테스트
+
+### Http 메서드
+- GET - Select와 동일, 조회
+- POST - Insert와 동일, 등록 위주. 수정, 삭제도 가능
+- PUT - Update와 동일, 수정
+- DELETE - Delete와 동일, 삭제
+
+## 유니티
+- 게임엔진+: Unity(C#), Unreal(C++), Blender(Python), Godot Engine(C#)
+- Unity 특장점
+    - 구현 쉽다. 툴 실행이 빠르다
+    - 인더스트리 분야 진입 속도가 빠름
+    - 캐주얼 게임, 디지털 트윈(현실세게와 가상세계를 일치화)
+
+### 유니티 설치
+- https://unity.com/ 에서 회원가입, 로그인 후 다운로드
+- 유니티 허브 설치
+- 유니티 허브 실행 > 로그인
+- Personal License 승인하면 활성화
+- Install -> Editor 설치
+
 ### OpenAPI 연동 앱
 - 미세먼지 모니터링 앱
 - 국가교통정보 CCTV뷰 앱
 - IoT 모니터링 앱
 - ...
+
+### 키오스크 앱
+- 결제이전까지 동작하는 버전
+- WPF를 사용해서 구현
 
 ### 라이브러리 만들기
 
