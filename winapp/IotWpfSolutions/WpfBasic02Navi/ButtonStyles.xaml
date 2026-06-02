@@ -1,0 +1,27 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style TargetType="Button">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <Rectangle RadiusX="12" RadiusY="12" 
+                                   Fill="#25A3FB" Stroke="DarkBlue" 
+                                   StrokeThickness="4">
+                            <Rectangle.Effect>
+                                <DropShadowEffect Color="Black"
+                                                  BlurRadius="15"
+                                                  ShadowDepth="5"
+                                                  Direction="320"
+                                                  Opacity="0.5" />
+                            </Rectangle.Effect>
+                        </Rectangle>
+                        <Label Content="{TemplateBinding Content}" 
+                               Foreground="White" FontSize="16" FontWeight="ExtraBold"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

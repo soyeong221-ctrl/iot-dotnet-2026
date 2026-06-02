@@ -1,0 +1,86 @@
+﻿<Page x:Class="WpfBasic02Navi.Sub01Page"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:WpfBasic02Navi"
+      mc:Ignorable="d" 
+      d:DesignHeight="520" d:DesignWidth="890"
+      Title="단순 컨트롤" Loaded="Page_Loaded">
+    <Page.Resources>
+
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Label Content="단순 컨트롤" Grid.Row="0" Grid.Column="0" />
+
+        <StackPanel Grid.Row="1" Grid.Column="0">
+            <Label Content="레이블 컨트롤(기본 padding)" />
+            <TextBlock Text="텍스트블록 컨트롤(padding없음)" />
+            <TextBox Text="일박 텍스트박스 컨트롤" />
+            <PasswordBox Password="123456" />
+            <Slider Minimum="0" Maximum="100" TickFrequency="10" Value="20" />
+            <ProgressBar Minimum="0" Maximum="100" Value="50" Height="20" />
+            <CheckBox Content="체크박스 컨트롤" />
+            <RadioButton Content="라디오버튼 컨트롤" />
+            <Button Content="버튼 컨트롤" />
+
+        </StackPanel>
+
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Image Grid.Column="0" Source="/cat01.jpg" Width="200" Stretch="Uniform"  />
+            <MediaElement x:Name="MediaPlayer" Grid.Column="1" Width="200" Height="100" 
+                          LoadedBehavior="Manual" Stretch="Uniform" />
+        </Grid>
+
+        <Canvas Grid.Row="2" Grid.Column="0" Background="LightGray" ClipToBounds="True">
+            <Rectangle Width="100" Height="100" 
+                       Fill="Red" Stroke="CadetBlue" StrokeThickness="5"
+                       Canvas.Left="-10" Canvas.Top="-40"/>
+
+            <Ellipse Width="100" Height="100" 
+                     Fill="GreenYellow" Stroke="Yellow" StrokeThickness="4"
+                     Canvas.Left="15" Canvas.Top="12"/>
+
+        </Canvas>
+
+        <Grid Grid.Row="2" Grid.Column="1">
+            <Button Margin="50" Click="Button_Click" Content="Press Me">
+                <!-- Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Rectangle RadiusX="12" RadiusY="12" 
+                                       Fill="#25A3FB" Stroke="DarkBlue" StrokeThickness="4">
+                                <Rectangle.Effect>
+                                    <DropShadowEffect Color="Black"
+                                                      BlurRadius="15"
+                                                      ShadowDepth="5"
+                                                      Direction="320"
+                                                      Opacity="0.5" />
+                                </Rectangle.Effect>
+                            </Rectangle>
+                            <Label Content="{TemplateBinding Content}" 
+                                   Foreground="White" FontSize="20" FontWeight="ExtraBold"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Button.Template -->
+            </Button>
+        </Grid>
+    </Grid>
+</Page>
