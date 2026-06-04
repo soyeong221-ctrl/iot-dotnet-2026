@@ -25,7 +25,7 @@ namespace WpfBasic02Navi
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            MediaPlayer.Source = new Uri(@".\earth.avi", UriKind.RelativeOrAbsolute);
+            MediaPlayer.Source = new Uri(@".\sample.mp4", UriKind.RelativeOrAbsolute);
             MediaPlayer.Play();
         }
 

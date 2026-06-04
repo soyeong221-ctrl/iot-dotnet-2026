@@ -18,8 +18,8 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal">
             <Button x:Name="BtnMenu01" Content="Controls Page" Margin="10,10,5,10" Width="160" Click="BtnMenu01_Click" />
             <Button x:Name="BtnMenu02" Content="Content Page" Margin="5,10,5,10" Width="150" Click="BtnMenu02_Click"/>
-            <Button Content="Page03" Margin="5,10,5,10" Width="150"/>
-            <Button Content="Page04" Margin="5,10,5,10" Width="150"/>
+            <Button x:Name="BtnMenu03" Content="WPF 바인딩" Margin="5,10,5,10" Width="150" Click="BtnMenu03_Click"/>
+            <Button x:Name="BtnMenu04" Content="윈폼 바인딩" Margin="5,10,5,10" Width="150" Click="BtnMenu04_Click"/>
             <Button Content="Page05" Margin="5,10,10,10" Width="150"/>
         </StackPanel>
 
