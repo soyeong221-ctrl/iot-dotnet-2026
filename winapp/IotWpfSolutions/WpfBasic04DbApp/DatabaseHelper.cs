@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace WpfBasic04DbApp
@@ -10,7 +11,7 @@ namespace WpfBasic04DbApp
     {
         // MySQL 연결문자열
         private string connStr = "Server = localhost;Database=bookrentalshop;User ID=root;Password=my123456;Charset=utf8mb4;";
-        
+
         /// <summary>
         /// SELECT 쿼리 실행 메서드
         /// MySQL, SQLServer, Oracle 등 DB종류와 상관없이 순서 동일
@@ -35,8 +36,8 @@ namespace WpfBasic04DbApp
             adapter.Fill(dt);
 
             return dt;
-        
-        
+
+
         }
 
         public int Execute(string sql)
@@ -50,6 +51,25 @@ namespace WpfBasic04DbApp
                     return cmd.ExecuteNonQuery();   // INSERT, UPDATE, DELETE 쿼리를 실행
                 }
 
+            }
+        }
+
+        // Parameter 사용 Execute, 오버로딩
+        // params 키워드 사용 MySqlParameter 갯수 제한 없음
+        public int Execute(string sql, params MySqlParameter[] parameters)
+        {
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                conn.Open();
+
+                using (MySqlCommand cmd = new MySqlCommand(sql, conn))
+                {
+                    if (parameters != null)
+                        cmd.Parameters.AddRange(parameters);
+
+                    return cmd.ExecuteNonQuery();   // INSERT, UPDATE, DELETE 쿼리를 실행
+
+                }
             }
         }
     }
