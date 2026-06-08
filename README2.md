@@ -1,0 +1,76 @@
+# 2026 닷넷 개발자 데스크톱 개발
+
+### WPF 실습
+
+#### 카페 키오스크 개발
+
+- 사용 스펙
+  - WPF (.NET 10.0)
+  - MaterialDesign (MaterialDesignInXamlToolKit)
+  - MySQL + DBeaver
+
+#### 프로젝트 생성
+
+- WpfCafeKiosk
+- NuGet Package, MaterialDesignThemes, MySQLConnector 설치
+- MahApps.Metro.IconPacks 추가 설치
+
+  ![](assets/20260608_101210_image.png)
+
+### 프로젝트 구성
+
+- WPF 머티리얼디자인 적용
+- 키오스크 UI 제작
+- 메뉴 모델, 주문 모델 생성
+- 메뉴버튼 하드코딩
+- MySQL menu 테이블 생성
+- DB에서 메뉴 조회
+- 메뉴버튼 동적 생성
+- 주문목록, 총액 계산
+
+#### MaterialDesign 적용
+
+- App.xaml에 리소스딕셔너리 적용
+
+#### MySQL DB, Table 생성
+
+- cafekisok 데이터베이스 생성
+- menu 테이블 생성
+
+```sql
+CREATE TABLE menu
+(
+    menu_id INT PRIMARY KEY AUTO_INCREMENT,
+    menu_name VARCHAR(100) NOT NULL,
+    price INT NOT NULL,
+    image_path VARCHAR(255),
+    category VARCHAR(20),
+    is_sale CHAR(1) DEFAULT 'Y'
+);
+```
+
+#### 모델 클래스
+
+- MenuItem - DB menu 테이블과 매핑
+- OrderItem - 주문리스트 저장
+
+#### 이미지 작업
+
+* https://www.flaticon.com/
+* https://icons.getbootstrap.com/
+* Pixbay 등 사이트에서 다운로드
+* 일부 편집
+* Images 폴더에 붙여넣기
+  ![alt text](image-33.png)
+
+#### MainWindow UI 작업 및 기본 이벤트
+
+![](assets/20260608_155106_image.png)
+
+#### 메뉴 옵션 팝업창 작성
+![alt text](image-34.png)
+
+#### 기본 동작 이벤트 구현
+- 
+
+#### OpenAPI 연동앱 개발 
