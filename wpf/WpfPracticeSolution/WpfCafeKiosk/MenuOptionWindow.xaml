@@ -1,0 +1,61 @@
+﻿<Window x:Class="WpfCafeKiosk.MenuOptionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialsDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:local="clr-namespace:WpfCafeKiosk"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner" WindowStyle="None"
+        ResizeMode="NoResize"
+        Background="Transparent" AllowsTransparency="True"
+        Title="MenuOptionWindow" Height="350" Width="320">
+    <materialsDesign:Card UniformCornerRadius="10" Padding="0">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="60"/>
+            </Grid.RowDefinitions>
+            
+            <!-- 상품정보 영역 -->
+            <Grid Grid.Row="0" Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Image x:Name="ImgMenu" Stretch="Uniform" Source="/Images/iceamericano.png"/>
+
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock x:Name="TxtMenuName" Text="아이스 아메리카노" FontSize="15" FontWeight="Bold" Foreground="DimGray" TextAlignment="Center" TextWrapping="NoWrap"/>
+                    <TextBlock x:Name="TxtPrice" Text="3,500원" FontSize="14" FontWeight="Bold" Foreground="#FF5A45" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+            
+            <!-- 수량 영역 -->
+            <Border Grid.Row="1"
+                    BorderBrush="#EEEEEE" BorderThickness="0,1,0,1">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Label Content="수량" VerticalAlignment="Center" Margin="0,0,20,0" Foreground="DimGray" FontWeight="Bold"></Label>
+                    <Button Width="30" Height="30" Padding="0" Content="-" FontWeight="Bold" Background="#FF5A45" Foreground="White"/>
+                    <TextBlock Text="1" Width="50" FontSize="13" TextAlignment="Center" VerticalAlignment="Center"/>
+                    <Button Width="30" Height="30" Padding="0" Content="+" FontWeight="Bold" Background="#FF5A45" Foreground="White"/>
+                </StackPanel>
+            </Border>
+            
+            <!-- 버튼 영역 -->
+            <Grid Grid.Row="2" Margin="20,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="15"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" Content="주문 담기" Background="#FF5A45" Foreground="White" FontWeight="Bold" Height="50"/>
+                <Button x:Name="BtnCancel" Grid.Column="2" Content="취소" Background="#5D5353" Foreground="White" FontWeight="Bold" Height="50" BorderThickness="0" Click="BtnCancel_Click"/>
+            </Grid>
+        </Grid>
+    </materialsDesign:Card>
+</Window>
