@@ -39,9 +39,9 @@
                     BorderBrush="#EEEEEE" BorderThickness="0,1,0,1">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Label Content="수량" VerticalAlignment="Center" Margin="0,0,20,0" Foreground="DimGray" FontWeight="Bold"></Label>
-                    <Button Width="30" Height="30" Padding="0" Content="-" FontWeight="Bold" Background="#FF5A45" Foreground="White"/>
-                    <TextBlock Text="1" Width="50" FontSize="13" TextAlignment="Center" VerticalAlignment="Center"/>
-                    <Button Width="30" Height="30" Padding="0" Content="+" FontWeight="Bold" Background="#FF5A45" Foreground="White"/>
+                    <Button x:Name="BtnMinus" Width="30" Height="30" Padding="0" Content="-" FontWeight="Bold" Background="#FF5A45" Foreground="White" Click="BtnMinus_Click"/>
+                    <TextBlock x:Name="TxtQty" Text="0" Width="50" FontSize="13" TextAlignment="Center" VerticalAlignment="Center"/>
+                    <Button x:Name="BtnPlus" Width="30" Height="30" Padding="0" Content="+" FontWeight="Bold" Background="#FF5A45" Foreground="White" Click="BtnPlus_Click"/>
                 </StackPanel>
             </Border>
             
@@ -53,7 +53,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0" Content="주문 담기" Background="#FF5A45" Foreground="White" FontWeight="Bold" Height="50"/>
+                <Button x:Name="BtnAdd" Grid.Column="0" Content="주문 담기" Background="#FF5A45" Foreground="White" FontWeight="Bold" Height="50" Click="BtnAdd_Click"/>
                 <Button x:Name="BtnCancel" Grid.Column="2" Content="취소" Background="#5D5353" Foreground="White" FontWeight="Bold" Height="50" BorderThickness="0" Click="BtnCancel_Click"/>
             </Grid>
         </Grid>

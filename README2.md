@@ -40,6 +40,7 @@ https://github.com/user-attachments/assets/4d5e171a-490c-4dbb-b246-62b66befcfef
 
 - cafekisok 데이터베이스 생성
 - menu 테이블 생성
+- orders, order_detail 테이블 생성
 
 ```sql
 CREATE TABLE menu
@@ -51,7 +52,31 @@ CREATE TABLE menu
     category VARCHAR(20),
     is_sale CHAR(1) DEFAULT 'Y'
 );
+
+CREATE TABLE orders
+(
+    order_id INT PRIMARY KEY AUTO_INCREMENT,
+    order_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    total_count INT NOT NULL,
+    total_amount INT NOT NULL
+);
+
+CREATE TABLE order_detail
+(
+    detail_id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT NOT NULL,
+    menu_id INT NOT NULL,
+    menu_name VARCHAR(100) NOT NULL,
+    price INT NOT NULL,
+    count INT NOT NULL,
+    total_price INT NOT NULL,
+    CONSTRAINT fk_order_detail_orders
+        FOREIGN KEY (order_id)
+        REFERENCES orders(order_id)
+);
 ```
+
+![alt text](image-36.png)
 
 #### 모델 클래스
 
@@ -76,10 +101,38 @@ https://github.com/user-attachments/assets/4382de8d-28e1-4b95-a121-24b8c30ffcb5
 
 
 #### 메뉴 옵션 팝업창 작성
+
 ![alt text](image-34.png)
 
+<<<<<<< Updated upstream
 #### 실행 결과
 https://github.com/user-attachments/assets/9832eaaf-8ef5-4c61-bffe-ffcf842fbce9
 
  
 #### OpenAPI 연동앱 개발 
+=======
+#### 기본 동작 이벤트 구현
+
+### 카페 키오스크 구현 리스트
+
+- [X] 옵션 팝업창에서 수량 선택한 내용 주문담기 버튼 기능 구현
+- [X] 키오스크 리스트뷰 음료 리스트업
+- [X] 선택한 상품, 결제버튼 비용, 갯수 연동
+- [X] 전체 삭제 기능
+- [X] 남은 시간 완료 후 전체내용 초기화
+- [X] 홈 버튼 클릭 초기화
+- [X] 메인창에서 옵션창으로 MenuId 전달
+- [ ] DB 연동: 메뉴 SELECT / 주문내역 INSERT
+- [X] 메뉴 동적 바인딩
+
+#### 옵션창 주문 내역 확인
+
+![alt text](image-35.png)
+
+- `Tag={Binding}` - 객체 자체 의미, OrderItem 객체 자체. 하위에서 MenuName, Count 등 사용 가능
+- Margin, padding 위치 순서 - Left, Top, Right, Bottom / Left&Right, Top&Bottom
+- CornerRadius 위치 순서 - TopLeft, TopRight, BottomLeft, BottomRight / TopLeft&BottomRight, TopRight&BottomLeft 순서
+
+
+#### OpenAPI 연동앱 개발
+>>>>>>> Stashed changes

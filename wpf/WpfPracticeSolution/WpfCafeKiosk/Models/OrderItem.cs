@@ -10,12 +10,7 @@
         public int Price { get; set; }
         public int Count { get; set; }
 
-        public int TotalPrices
-        {
-            get
-            {
-                return Price * Count;
-            }
-        }
+        // get { return Price * Count; }
+        public int TotalPrice { get; set; }
     }
 }
