@@ -149,7 +149,12 @@ https://github.com/user-attachments/assets/9832eaaf-8ef5-4c61-bffe-ffcf842fbce9
 
 #### 전체 실행결과
 
---- 
+https://github.com/user-attachments/assets/b884151e-350e-457e-bfec-6dd2fa818f10
+
+
+https://github.com/user-attachments/assets/9a8af339-d5f1-4a8f-afb0-f3a77153ad5f
+
+
 
 ### 1.2. OpenAPI 연동앱 개발
 
@@ -426,7 +431,7 @@ https://github.com/user-attachments/assets/9832eaaf-8ef5-4c61-bffe-ffcf842fbce9
 
 
 #### 완성 실행 결과
-
+https://github.com/user-attachments/assets/6dcff601-eee8-40cf-baca-6607a85b763a
 
 ### 1.3 SmartHome 솔루션
 
