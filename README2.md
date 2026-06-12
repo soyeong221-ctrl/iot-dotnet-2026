@@ -447,6 +447,8 @@ https://github.com/user-attachments/assets/6dcff601-eee8-40cf-baca-6607a85b763a
   - SignalR: 실시간 웹
   - WebSocket 브로드캐스트: 실시간 웹
 - 소켓통신, TCP/IP 기반
+- 일반적으로 육상은 실시간 전송 가능(100ms ~ 1s)
+- 육상과 해상을 연결하는 위성통신 준실시간(1m ~ 5m)
 
 - MQTT 동작방식
 ![alt text](image-50.png)
@@ -454,20 +456,153 @@ https://github.com/user-attachments/assets/6dcff601-eee8-40cf-baca-6607a85b763a
 - MQTT 시스템 구성도
 ![alt text](image-52.png)
 
-#### WPF SmartHome 프로젝트
+
+  ## 🛠️ System Architecture
+
+  본 프로젝트는 MQTT 프로토콜을 기반으로 IoT 디바이스의 센서 데이터를 수집하고, 이를 실시간 시각화 및 데이터베이스에 적재하는 IoT 모니터링 시스템입니다. 
+
+  * **IoT Devices**: 
+    * **Sensor**: 온도, 습도, 압력, 조도 등 환경 데이터를 측정하여 수집합니다.
+    * **Actuator**: Motor, LED, Valve 등 서버로부터 제어 명령을 받아 구동합니다.
+  * **MQTT Broker (Mosquitto)**: 중앙에서 MQTT 메시지를 중재하고 데이터/명령어를 배달하는 핵심 서버입니다.
+  * **Visualization (실시간 시각화)**: 대시보드를 통해 수집된 센서 데이터를 실시간으로 모니터링하고 제어 명령을 송신합니다.
+  * **Storage (데이터 저장)**: `DB Daemon`을 거쳐 `Database(SQL)`에 이력 데이터를 누적하고 `Management` 툴을 통해 통계 및 조회를 수행합니다.
+
+  
+  ### 2. 데이터 흐름 및 통신 프로토콜 (Data Flow)
+
+  | 통신 방식 | 주체 (From ➡️ To) | 설명 |
+  | :--- | :--- | :--- |
+  | **Publish (MQTT)** | IoT 디바이스 ➡️ MQTT Broker | 센서가 측정한 환경 데이터를 브로커로 발행 |
+  | **Subscribe (MQTT)** | MQTT Broker ➡️ 시각화 / DB Daemon | 브로커가 수신한 센서 데이터를 필요한 서비스로 전달 |
+  | **Publish (MQTT)** | 시각화(대시보드) ➡️ MQTT Broker | 사용자의 디바이스 제어 명령을 브로커로 발행 |
+  | **Subscribe (MQTT)** | MQTT Broker ➡️ IoT 디바이스 | 브로커가 제어 명령을 구독 중인 액추에이터로 전송 |
+  | **SQL** | DB Daemon ➡️ Database | 수집된 데이터를 SQL 문을 통해 데이터베이스에 저장 및 조회 |
+
+#### WPF SmartHome 프로젝트 순서
 - Dummy Sensing Data 생성, 송신 앱 구현
 - MQTT 브로커 설치 및 설정
 - SmartHome 모니터링 앱 구현
 
-#### MQTT 브로커
-
 #### Dummy Simulator앱
+- Fake 데이터를 생성하는 앱
+- 직접 IoT디바이스를 사용하지 않고 테스트
+- 시스템 개발시 실제 데이터를 활용해서 개발
+- Bogus Package를 사용해서 가짜 데이터 생성
+
+##### 중간 실행 결과
+- 현재 방 4개(침실, 욕실, 거실, 주방)을 Faker로 생성
+- 각 방별로 IoT장비(아두이노) + 온습도센서 + 무선통신 구성 필요
+- 라즈베리파이 등의 수집장비에서 데이터 수신 받은 뒤
+- json으로 변경해서 MQTT Broker로 전달
+
+![alt text](image-53.png)
+
+##### 추가개발건
+- [x] 리치텍스트박스 텍스트출력 수정
+- [x] 리치텍스트박스에 출력된 이전 텍스트 삭제
+  - 텍스트박스에 데이터가 계속 쌓이면 프로그램 사용메모리가 증가
+- [x] 연결 후 연결종료 처리
+- [ ] MQTT Broker 연결 Publish 구현
+- [ ] MySQL DB 센싱데이터 저장
+
+##### 1차 완료 실행결과
+![alt text](image-54.png)
+
+#### MQTT 브로커
+- MQTT를 사용하는 클라이언트, 서버끼리 직접통신하지 않음
+- 모든 메시지가 Broker를 통해서 전달
+
+##### 브로커 기능
+1. 메시지 중계
+2. Topic 관리 - 개발사가 결정
+  - smarthome/d103h703 - 103동 703호 데이터 처리
+  - smarthome/d101h101 - 101동 101호 데이터 처리
+  - smarthome/# - 모든 데이터 수신
+3. QoS(Quality of Service) 메시지 전달 보장수준 관리
+  - 전송 실패하면 다시 보낼지, 버리고 다음 데이터 보낼지 결정
+4. 보안 관리
+
+##### 브로커 종류
+- Eclipse Mosquitto - 무료, 사용 쉬움, 오픈소스, 라즈베리파이 지원가능
+- EMQX - 대규모 서비스용, 수백만 연결, 클러스터링
+- HiveMQ - 기업용 MQTT 브로커, 고성능, 클라우드 지원
+
+##### MQTT Broker 설치
+1. https://mosquitto.org/download/ > Windows > mosquitto-2.1.2-install-windows-x64.exe 설치
+2. Windows 시작 > services.msc 실행
+  ![alt text](image-55.png)
+
+3. http://mqtt-explorer.com/
+  ![alt text](image-56.png)
+
+##### Mosquitto 설정
+- Publish 테스트
+![alt text](image-57.png)
+
+- 설치 경로\mosquitto.conf 파일
+- NotePad 종류를 관리자권한으로 실행
+
+```conf
+# Config file for mosquitto
+...
+# MQTT 브로커 port 번호 변경 원하면 주석 제거
+# 1883 default port
+listener 1883
+# 누구나 접속을 허용하려면
+allow_anonymous true
+```
+- 윈도우 서비스에서 Mosquitto 서비스 재시작
+- Mosquitto 설치된 컴퓨터 IP주소 확인
+
+#### Mosquitto 계정 암호화
+
+- Mosquitto 설치 폴더는 시스템 폴더라서 파일 생성 불가
+- 윈도우 시작 > Powershell 실행
+
+```powershell
+# root 계정의 암호파일을 생성
+> mosquitto_passwd.exe -c password.txt root
+Password:
+
+Reenter password:
+
+Adding password for user root
+```
+
+- password.txt 파일 생성
+- Mosquitto 설치폴더에 붙여넣기
+
+- 서비스에서 Mosquitto 중지
+- NotePad에서 설치경로\mosquitto.conf 파일 오픈
+
+```conf
+# 암호 계정으로 접속 허용
+allow_anonymous false
+# 계정 암호 파일 설정 
+password_file C:/Program Files/Mosquitto/password.txt
+```
+
+- MQTT Explorer 접속테스트
+![alt text](image-58.png)
+
+#### MQTT Publish 구현
+- Dummy IoT Data 앱에서 구현
+
+##### MQTTnet 패키지 설치
+- NUGet 패키지 관리에서 MQTTnet 검색 후 설치
+
 
 #### SmartHome 모니터링 앱
-
-### MVVM은 나중에
+- MQTT Subscribe 기능
 
 #### Dummy IoT Data 생성
 - 1초마다 DB에 저장
 
-## Unity 실습
+### MVVM은 나중에
+
+## 2. Unity 실습
+
+### 2.1 Essentials PathWay
+
+### 2.2 Unity Factory
