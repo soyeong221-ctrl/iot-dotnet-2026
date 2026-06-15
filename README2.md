@@ -152,8 +152,7 @@ https://github.com/user-attachments/assets/9832eaaf-8ef5-4c61-bffe-ffcf842fbce9
 https://github.com/user-attachments/assets/b884151e-350e-457e-bfec-6dd2fa818f10
 
 
-https://github.com/user-attachments/assets/9a8af339-d5f1-4a8f-afb0-f3a77153ad5f
-
+- [소스폴더](./wpf/WpfPracticeSolution/WpfCafeKiosk/)
 
 
 ### 1.2. OpenAPI 연동앱 개발
@@ -433,7 +432,14 @@ https://github.com/user-attachments/assets/9a8af339-d5f1-4a8f-afb0-f3a77153ad5f
 #### 완성 실행 결과
 https://github.com/user-attachments/assets/6dcff601-eee8-40cf-baca-6607a85b763a
 
+- [소스폴더](./wpf/WpfPracticeSolution/WpfBusanFestivalApp/)
+
+
 ### 1.3 SmartHome 솔루션
+
+- 참조 UI 이미지
+
+![alt text](image-59.png)
 
 #### MQTT
 - Message Queuing Telemetry Protocol: 메시지 큐를 통해 메시지를 전달하는 프로토콜
@@ -591,6 +597,93 @@ password_file C:/Program Files/Mosquitto/password.txt
 
 ##### MQTTnet 패키지 설치
 - NUGet 패키지 관리에서 MQTTnet 검색 후 설치
+
+#### 실행화면
+
+
+#### MQTT Subscribe 앱
+- MQTT 메시지 수신, DB 저장 기능
+- MQTT Publish 앱 복사, 커스터마이징
+
+##### 구독 실행화면
+
+
+##### NuGet 패키지 설치
+- MySQLConnector 추가
+
+##### DB 테이블 생성
+
+```sql
+CREATE TABLE sensor_data
+(
+    sensor_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    home_id VARCHAR(50) NOT NULL,
+    room_name VARCHAR(50) NOT NULL,
+    sensing_datetime DATETIME NOT NULL,
+    temp DOUBLE NOT NULL,
+    humid DOUBLE NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### test - OpenAPI를 사용한 맛집정보제공 앱: WpfBusanFoodApp
+## 부산맛집 정보 WPF 앱
+
+### 개발 목적
+공공데이터포털의 부산광역시 부산맛집정보 OpenAPI를 활용하여 부산 맛집 목록과 상세 정보를 제공하는 WPF 데스크톱 앱을 구현하였다.
+
+### 사용 기술
+- WPF (.NET 10)
+- MahApps.Metro
+- MahApps.Metro.IconPacks
+- Newtonsoft.Json
+- CefSharp.Wpf.NETCore
+- NLog
+- 공공데이터포털 OpenAPI
+
+### 프로젝트 구성
+
+```text
+WpfBusanFoodApp
+├─ Models
+│  ├─ FoodItem.cs
+│  ├─ FoodData.cs
+│  └─ FoodResponse.cs
+├─ Services
+│  └─ FoodApiService.cs
+├─ Helpers
+│  └─ Common.cs
+├─ MainWindow.xaml
+├─ MainWindow.xaml.cs
+├─ FoodDetailWindow.xaml
+├─ FoodDetailWindow.xaml.cs
+├─ App.xaml
+└─ NLog.config
+```
+
+### 주요 기능
+
+![alt text](image-60.png)
+1. 페이지 번호와 결과 수를 이용한 데이터 조회
+  - 부산맛집정보 OpenAPI 호출
+  - 맛집명, 구군, 주소, 대표메뉴, 전화번호 표시
+  - API 내부 고유번호인 UC_SEQ 대신 페이지번호와 결과수를 기준으로 화면 표시용 순번(DisplayNo)을 계산하여 표시.
+
+![alt text](image-61.png)
+2. DataGrid 행 더블클릭 시 상세정보 창 표시
+  - 상세정보 창에서 대표 이미지, 주소, 대표메뉴, 전화번호, 홈페이지, 상세 설명 표시
+  - 상세 설명의 HTML 태그 제거 후 텍스트로 출력
+  - 위도/경도를 이용한 지도 표시
+  - 홈페이지 링크 클릭 시 기본 브라우저 실행
+
+![alt text](image-62.png)
+3. 상태표시줄에 데이터 로드 결과 표시
+ - NLog를 이용한 앱 실행 및 API 조회 로그 기록
+
+![alt text](image-63.png)
+4. 현재 조회된 맛집 목록 중 하나를 무작위로 선택하여 상세정보를 보여주는 "오늘 뭐 먹지?" 기능 추가
+
+[소스폴더](./wpf/WpfPracticeSolution/WpfBusanFoodApp/)
 
 
 #### SmartHome 모니터링 앱

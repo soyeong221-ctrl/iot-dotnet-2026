@@ -27,7 +27,7 @@ namespace WpfSmartHomeSensingApp
     public partial class MainWindow : MetroWindow
     {
         private bool IsConnected { get; set; } // 접속여부 확인
-        
+
         private CancellationTokenSource? _cts; // 스레드 캔슬객체: 비동기 작업 중지시켜주는 객체
 
         #region DummyData용 속성/변수들
@@ -42,7 +42,7 @@ namespace WpfSmartHomeSensingApp
 
         private IMqttClient? MqttClient { get; set; }
 
-        private string MqttHost { get; set; } = "127.0.0.1";
+        private string MqttHost { get; set; } = "127.0.0.1";    // TxtMqttBrokerIp 텍스트박스의 IP로 변경되어야 함
         private int mqttPort { get; set; } = 1883;
 
         private string MqttUser { get; set; } = "root";
@@ -67,7 +67,7 @@ namespace WpfSmartHomeSensingApp
         #endregion
 
         #region 이벤트핸들러 영역
-        private void BtnConnect_Click(object sender, RoutedEventArgs e)
+        private async void BtnConnect_Click(object sender, RoutedEventArgs e)
         {
             // Bogus 테스트
             //var faker = new Faker("ko");    // 한국어 데미데이터
@@ -79,15 +79,18 @@ namespace WpfSmartHomeSensingApp
 
             if (string.IsNullOrWhiteSpace(TxtMqttBrokerIp.Text))
             {
-                this.ShowMessageAsync("오류", "MQTT브로커주소를 입력하세요.");
+                await this.ShowMessageAsync("오류", "MQTT브로커주소를 입력하세요.");
 
                 Common.logger.Warn("MQTT브로커주소 미입력!");
                 return;
             }
 
+            MqttHost = TxtMqttBrokerIp.Text.Trim(); // MqttHost 값 127.0.0.1 -> UI에서 입력한 HostIP로 변경
+
             if (IsConnected == false)
             {
-
+                // Mqtt브로커 접속 시도
+                await ConnectMqttAsync();
 
                 // 아이피주소 형식에 맞지 않으면 메시지창 출력
                 IsConnected = true;
@@ -95,7 +98,7 @@ namespace WpfSmartHomeSensingApp
 
                 Common.logger.Info("Bogus Faker 처리시작.");
                 SbiStatus.Text = "MQTT 연결 시작";
-                StartSensing(); // 연결 후 처리시작
+                await StartSensingAsync(); // 연결 후 처리시작
             }
             else
             {
@@ -103,9 +106,16 @@ namespace WpfSmartHomeSensingApp
                 TxtStatus.Text = "CONNECT";
 
                 StopSensing();  // 연결종료 후 처리중지
-                Common.logger.Info("Bogus Faker 처리종료.");
-                SbiStatus.Text = "MQTT 연결 종료";
 
+                if (MqttClient != null && MqttClient.IsConnected)
+                {
+                    await MqttClient.DisconnectAsync();
+
+                    AddLogs("SYSTEM", "MQTT 브로커 접속종료");
+                    Common.logger.Info("Bogus Faker 처리종료.");
+                    SbiStatus.Text = "MQTT 연결 종료";
+
+                }
             }
         }
 
@@ -126,7 +136,12 @@ namespace WpfSmartHomeSensingApp
         {
             _cts?.Cancel();
         }
-        private async void StartSensing()
+
+        /// <summary>
+        /// Dummy Sensing값 생성메서드
+        /// </summary>
+        /// <returns></returns>
+        private async Task StartSensingAsync()
         {
             _cts = new CancellationTokenSource();
 
@@ -148,8 +163,11 @@ namespace WpfSmartHomeSensingApp
                     // list 데이터를 json으로 변환. 직렬화 -> 네트워크로 전송
                     string json = JsonSerializer.Serialize(lists, new JsonSerializerOptions { WriteIndented = true });
 
+                    // 데이터 Publish
+                    await PublishMqttAsync(MqttTopic, json);
+
                     // Console.WriteLine(json);
-                    AddLog("home/sensor", json);
+                    AddLogs("home/sensor", json);
 
                     await Task.Delay(TimeSpan.FromSeconds(1));
                 }
@@ -160,13 +178,14 @@ namespace WpfSmartHomeSensingApp
             }
         }
 
-        private void AddLog(string topic, string payload)
+        private void AddLogs(string topic, string payload)
         {
             // 언젠가 응답없음 발생함!
             // RtbLog.AppendText($"{topic} : {payload}\r\n"); // 이 방식으로 텍스트 입력 가능
 
             // RichTextBox 활용
-            Dispatcher.Invoke(() => {
+            Dispatcher.Invoke(() =>
+            {
                 // UI스레드와 충돌없이 텍스트 출력 방법
                 Paragraph p = new Paragraph();
 
@@ -199,10 +218,58 @@ namespace WpfSmartHomeSensingApp
                         RtbLog.Document.Blocks.FirstBlock);
                 }
 
-            RtbLog.ScrollToEnd();   // 리치텍스트박스 가장 마지막으로 포커스
+                RtbLog.ScrollToEnd();   // 리치텍스트박스 가장 마지막으로 포커스
 
             });
         }
+
+        /// <summary>
+        /// MQTT 브로커 접속 메서드
+        /// </summary>
+        private async Task ConnectMqttAsync()
+        {
+            // MQTTnet으로 초기화 할 때 동일한 방식
+            var factory = new MqttClientFactory();
+            MqttClient = factory.CreateMqttClient();    // DesignPattern 중 Factory 메서드 방식으로 객체 생성
+
+            // DesignPattern Builder 사용
+            var options = new MqttClientOptionsBuilder()
+                .WithClientId($"WPF-SmartHome-{Guid.NewGuid()}")
+                .WithTcpServer(MqttHost, mqttPort)
+                .WithCredentials(MqttUser, MqttPassword)
+                .WithCleanSession()
+                .Build();
+
+            await MqttClient.ConnectAsync(options);
+
+            AddLogs("SYSTEM", "Mqtt Broker Connected");
+
+        }
+
+        /// <summary>
+        /// MQTT브로커로 메시지 publish 메서드
+        /// </summary>
+        /// <param name="topic">토픽(주제)</param>
+        /// <param name="payload">전송할 메시지(json 타입)</param>
+        private async Task PublishMqttAsync(string topic, string payload)
+        {
+            // Mqtt 클라이언트가 아직 초기화 안 되었거나, 접속이 안 되었다면
+            if (MqttClient == null || !MqttClient.IsConnected)
+            {
+                AddLogs("ERROR", "MQTT Broker에 접속되지 않았습니다.");
+                return;
+            }
+
+            // 실제 전달할 메시지(페이로드) 작성
+            var message = new MqttApplicationMessageBuilder()
+                .WithTopic(topic)   // 이 토픽으로 데이터 송수신
+                .WithPayload(Encoding.UTF8.GetBytes(payload))   // string을 byte[]로 변경
+                .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce)  // 데이터 전송 후 체크X
+                .Build();
+
+            await MqttClient.PublishAsync(message);
+        }
+
         #endregion
     }
 }
