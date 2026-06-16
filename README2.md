@@ -686,16 +686,12 @@ WpfBusanFoodApp
 [소스폴더](./wpf/WpfPracticeSolution/WpfBusanFoodApp/)
 
 
-#### SmartHome 모니터링 앱
-- MQTT Subscribe 기능
-
 #### Dummy IoT Data 생성
 - 1초마다 DB에 저장
 
+#### SmartHome 모니터링 앱
+- MQTT Subscribe 기능
+
 ### MVVM은 나중에
 
-## 2. Unity 실습
-
-### 2.1 Essentials PathWay
-
-### 2.2 Unity Factory
+[다음](./README3.md)
