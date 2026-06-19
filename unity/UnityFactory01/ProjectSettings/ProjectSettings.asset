@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 28
-  productGUID: 41c74f6c4dc17c54d84459c5792541d8
+  productGUID: a835e0de0fcf8a04e97b2a18b9ec854c
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -932,10 +932,10 @@ PlayerSettings:
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
   enableDirectStorage: 0
-  cloudProjectId: a9a88c5f-dccc-43d0-a90e-be0aa6ce886d
+  cloudProjectId: 2a3eea91-d886-48f2-96d6-5256fd337902
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: UnityFactory01
+  projectName: UnityFactory01 2026-06-19_14-53-19
   organizationId: soyeong221
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0

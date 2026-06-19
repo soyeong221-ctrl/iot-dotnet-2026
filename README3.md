@@ -758,7 +758,48 @@ public class SensorTrigger : MonoBehaviour
 
 
 #### 컨베이어, 스폰 기능 동기화
-- TODO
+- 센서가 감지되면 Conveyor와 Spawner 같이 중지
+- BoxSpawner.cs 수정 - isRunning 추가
+
+```cs
+private bool isRunning = true;
+
+void Update()
+{
+    if (!isRunning) return; // isRunning이 false면 아래 로직 실행 안 함
+    timer += Time.deltaTime; // HW 성능별 FPS 고정
+    if (timer >= interval)
+    {
+        timer = 0;
+        Instantiate(prdPrefab,
+                    transform.position,
+                    Quaternion.identity);
+    }
+}
+
+public void Stop()
+{
+    isRunning = false;
+}
+
+public void StartSpawner()
+{
+    isRunning = true;
+}
+```
+
+- SensorTrigger.cs 수정 - BoxSpawner 변수 추가
+
+```cs
+
+```
+
+![alt text](image-150.png)
+
+
+
+
+
 
 
 ---
@@ -851,10 +892,65 @@ public class SensorTrigger : MonoBehaviour
 ![alt text](image-139.png)
 
 
-### 프로빌더 연습
+### 큐브형태 벽 생성
+- 기존 큐브 > Face 선택 > Scale 선택
+- Shift 누른 상태에서 크기 조정
+
+![alt text](image-140.png)
+
+- 원본 면 크기보다 작게 조정 가능
+- Move 선택
+- Shift 누른 상태에서 위치 이동
+
+![alt text](image-141.png)
+
+- 반복 작업, 벽 생성
 
 
-### 2.5 Unity Factory
+#### 문, 창문 만들기
+- 직교 기준 Edge 선택 > Context Menu > Insert Edge Loop 클릭
+
+![alt text](image-142.png)
+
+- 창문, 문 위치 Face 선택 > Move 선택. 창문/문 내려는 방향으로
+- Shift 누른 상태에서 이동
+
+![alt text](image-143.png)
+
+- Context Menu > Delete Face 선택
+- 반대편 면에서도 Delete Face 선택
+
+![alt text](image-144.png)
+
+
+#### 재질 적용
+- Asset Store Web > Material 검색 > 애셋 추가
+- Unity Editor Import
+
+- Tools > ProBuilder > Editors > Material Editor 클릭
+
+![alt text](image-145.png)
+
+
+#### Material 렌더링 문제
+
+![alt text](image-146.png)
+
+- Window > Rendering > Render Pipeline Converter 선택
+- Scan
+
+![alt text](image-147.png)
+
+- Convert Assets 버튼 클릭
+
+![alt text](image-149.png)
+
+![alt text](image-148.png)
+
+
+
+
+### 2.5 Unity Factory HDRP
 - Unity Technologies Japan에서 제공하는 무료 HDRP 공장 시뮬레이션 에셋
 - 공장 건물부터 컨베이어 라인, 로봇팔, 작업자, 조명 ..
 - https://assetstore.unity.com/ 에서 `Unity Factory` 검색
@@ -877,3 +973,32 @@ public class SensorTrigger : MonoBehaviour
 
 ![alt text](image-86.png)
 
+- 기존 Scene을 다름이름으로 재저장
+- 계층창
+
+![alt text](image-155.png)
+
+#### Spline 애니메이션 기능
+- 설치한 Splines 기능 사용
+- Hierarchy 창 > Create > Spline > 하위 메뉴 선택
+
+![alt text](image-156.png)
+
+- 움직일 오브젝트 선택 > Add Component > Spline Animate 추가
+- Spline 속성 > 적용한 Spline 지정
+- Movement Method Time Duration 변경 
+
+
+#### Product Spline 애니메이션
+- 컨베이어 위 생산품 동작 기능
+- 컨베이어 생산라인 매핑되는 Spline 생성
+- 이동 후 로봇팔 챔버에 도착하면 동작 멈춤
+- 일정시간 로봇팔 애니메이션 발생
+- 생산품 Spline 위로 이동
+- CustomSplineAnimate.cs 확인 필요
+
+
+### 2.6 IoT Sample Project
+- IoT Sample Project 애셋
+
+![alt text](image-157.png)

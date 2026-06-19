@@ -30,7 +30,7 @@ public class ConveyorBelt : MonoBehaviour
         rb.linearVelocity = moveDirection.normalized * speed;   // 이동방향으로 속도만큼 이동
     }
 
-    public void stop()
+    public void Stop()
     {
         isRunning = false;  // 중지
     }

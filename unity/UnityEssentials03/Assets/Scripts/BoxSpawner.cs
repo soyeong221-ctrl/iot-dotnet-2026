@@ -8,10 +8,13 @@ public class BoxSpawner : MonoBehaviour
     [Header("생성 간격")]
     public float interval = 3.0f;
 
-    float timer;
-    
+    private float timer;
+    private bool isRunning = true;
+
     void Update()
     {
+        if (!isRunning) return; // isRunning이 false면 아래 로직 실행 안 함
+
         timer += Time.deltaTime; // HW 성능별 FPS 고정
 
         if (timer >= interval)
@@ -24,5 +27,15 @@ public class BoxSpawner : MonoBehaviour
                         transform.position,
                         Quaternion.identity);
         }
+    }
+
+    public void Stop()
+    {
+        isRunning = false;
+    }
+
+    public void StartSpawner()
+    {
+        isRunning = true;
     }
 }

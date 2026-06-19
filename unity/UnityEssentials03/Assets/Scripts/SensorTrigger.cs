@@ -10,6 +10,9 @@ public class SensorTrigger : MonoBehaviour
     [Header("컨베이어 2")]
     public ConveyorBelt conveyor2;
 
+    [Header("박스생성기")]
+    public BoxSpawner spawner;
+
     private bool isProcessing = false;
 
     // 다른 Collider가 들어와서 Trigger 발생하면?
@@ -29,15 +32,19 @@ public class SensorTrigger : MonoBehaviour
     {
         isProcessing = true;
 
-        Debug.Log("제품 감지!");
+        Debug.Log("제품 감지 - 컨베이어/스폰 중지!");
 
-        conveyor1.stop();   // isRunning = false;
-        conveyor2.stop();
+        conveyor1.Stop();   // isRunning = false;
+        conveyor2.Stop();
+        spawner.Stop();
 
         yield return new WaitForSeconds(3.0f);  // 3초동안 대기한 뒤 다음로직으로 
 
         conveyor1.StartBelt();
         conveyor2.StartBelt();
+        spawner.StartSpawner();
+
+        Debug.Log("컨베이어/스폰 재시작!");
 
         yield return new WaitForSeconds(1.0f);
 

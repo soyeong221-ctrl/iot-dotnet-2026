@@ -420,8 +420,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.34162962, y: 0.47531822, z: -0.20715047, w: -0.783869}
-  m_LocalPosition: {x: 2.537103, y: 3.4952223, z: -2.9235098}
+  m_LocalRotation: {x: -0.29076076, y: 0.47511292, z: -0.16995087, w: -0.81292224}
+  m_LocalPosition: {x: 1.8503959, y: 3.2019684, z: -2.9018142}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -684,6 +684,7 @@ Transform:
   - {fileID: 1374558482}
   - {fileID: 748186693}
   - {fileID: 88995125}
+  - {fileID: 933940745}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &933940742
@@ -718,6 +719,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SensorTrigger
   conveyor1: {fileID: 1985196512}
   conveyor2: {fileID: 1007624082}
+  spawner: {fileID: 88995126}
 --- !u!65 &933940744
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -747,12 +749,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 933940742}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.273, y: 1.293, z: -2.792}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.26748002, y: 0.07910001, z: -1.03292}
   m_LocalScale: {x: 0.6952239, y: 0.22881266, z: 0.108771995}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 872946818}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1007624082 stripped
 MonoBehaviour:
@@ -909,4 +911,3 @@ SceneRoots:
   - {fileID: 264242153}
   - {fileID: 2320651711235288071}
   - {fileID: 872946818}
-  - {fileID: 933940745}
