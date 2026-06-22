@@ -1002,3 +1002,134 @@ public void StartSpawner()
 - IoT Sample Project 애셋
 
 ![alt text](image-157.png)
+
+
+#### 전체 분석
+- IoT Sample Scene 오픈
+    - Hierarchy 창 맨 위 오브젝트부터 분석 시작
+
+- 프로젝트 창
+- IoTConnector 폴더 - IndustryCSE.IoT 네임스페이스 사용
+
+- 게임오브젝트 활성화 구분
+    - activeSelf - 자기 자신이 활성상태인지 여부
+    - activeHierarchy - 부모오브젝트 포함해서 활성상태인지 여부
+
+1. Canvas UI 클릭
+    - Top Menu Bar 아래 구성 확인
+    - btn - Cloud 불필요. 사용 체크 해제/비활성화
+    - Date and Time 오브젝트
+        - DateTimeGenerator 스크립트 더블 클릭
+        - yyyy-MM-dd HH:mm:ss 포맷팅으로 변경
+
+    ![alt text](image-158.png)
+
+2. ControlSystem - Canvas UI 왼쪽 버튼 집합
+    - Button - 캔버스 사용시 제일 중요 
+
+    ![alt text](image-159.png)
+
+    - On Click() 이벤트 확인
+    - AppStates.ToggleOccupancy()
+        - AppLogic 빈 그룹 오브젝트 연결
+        - AppStates.cs가 컴포넌트로 연계
+
+    - AppStates.cs 스크립트 분석/수정
+
+    - 한글 폰트 Assets에 복사
+    - Window > TextMeshPro > Font Asset Creator 선택
+    - 폰트 선택
+    - Character Set > Unicode Range(hex) 선택
+    - 한글 입력 범위를 `AC00-D7A3` 까지 지정
+    - Generate Font Atlas 클릭
+
+    ![alt text](image-160.png)
+
+    - 완료 후 Save As.. 리소스 폴더에 저장
+
+    - OverlayMode TextMeshPro 컴포넌트에 폰트 지정
+
+    ![alt text](image-161.png)
+
+    - 실행
+
+    ![alt text](image-162.png)
+
+    - AppState에 적용된 폰트 변경 처리 
+
+
+3. Camera
+    - CameraController.cs - 물체를 기준으로 화면 회전 or 줌인아웃 기능
+
+    ![alt text](image-163.png)
+
+
+4. BrightonOffice 오브젝트
+    - 3DMax, Blender 같은 3D 모델링 툴에서 작업한 3D 사무실 모델
+    - Brighton_Floor_4 - 분석의미 없음
+
+5. BrightonOffice.Plane
+    - NavMesh Surface
+
+    ![alt text](image-164.png)
+
+    - NPC나 로봇이 길을 찾기 위해 사용하는 이동가능한 바닥정보
+    - 로봇청소기의 경우 프리팹에 길이 셋팅되어 있음. Prefabs > AI BOTS 클릭
+
+    ![alt text](image-165.png)
+
+    - NavMesh - 벽이나 장애물 피하고, 이동가능한 바닥만 따라다니게 미리 계산해놓은 객체
+    - Agent Type - 어떤 캐릭터 사용할지 결정
+    - Default Area - Walkable(이동가능), Not Walkable(이동불가), Jump(점프필요)
+
+    - Bake(굽기) 버튼 - 바닥 분석 후, 이동 가능한 영역 계산 후 새로운 NavMesh 생성
+    - 중간에 바닥을 막는 오브젝트가 존재하면 NavMesh가 분리됨
+
+    ![alt text](image-166.png)
+
+    - 문 등의 오브젝트를 제거하고 Clear후 재 Bake
+
+    ![alt text](image-167.png)
+
+6. IoTDevices - 오피스에 위치하는 IoT 센서 장비들에 대한 설정
+
+7. DeviceSimulator - IoT 시뮬레이션을 위한 더미데이터 생성용 클래스
+
+8. AppLogic - Humanoid, Robot청소기 동작 처리용 오브젝트
+
+    ![alt text](image-168.png)
+
+    - AIAgent - Humanoid 오브젝트 PathWalker 스크립트 컴포넌트에 WayPoint 7개 이미 지정
+    - WayPoint 위치 변경하면, NavMash Surface를 자동으로 이동
+
+
+9. MQTT Connector - IoThub.MqttMessageProvider.cs(MQTT 브로커 연결용), IoThub.IoTDeviceMessageReader(MQTT 메시지 읽기용) 스크립트로 구성
+
+#### 분석 및 수정 결과화면
+
+- 동영상
+
+### 2.7 WPF Dummy IoT 연동 프로젝트
+- IoT Sample Project는 M2Mqtt 라이브러리로 동작
+- MQTTnet으로 진행
+
+#### Unity Project 생성
+- URP로 프로젝트 생성
+- Asset Store에서 `Low Poly`로 검색 후 Free 클릭
+    - Cute Magic – Stylized Low Poly Interior Pack
+    - Cute Low Poly Furniture Pack
+    - Pandazole - 저 폴리 에셋 번들
+
+
+#### 방 구성
+- Pandazole Home Interior 애셋으로 구성
+
+#### MQTT 패키지 불러오기
+- Github에서 [NuGetForUnity]https://github.com/GlitchEnzo/NuGetForUnity 설치
+
+
+
+- MQTTnet은 DLL을 직접 가져와서 구성. MQTTnet 버전 충돌
+- MQTT for Unity(M2Mqtt)를 사용
+
+![alt text](image-169.png)

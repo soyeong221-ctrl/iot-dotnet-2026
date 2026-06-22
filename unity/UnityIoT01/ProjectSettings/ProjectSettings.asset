@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 28
-  productGUID: 00000000000000000000000000000000
+  productGUID: f2a449a7834e6f341bca6fc8fab7d37c
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -959,7 +959,7 @@ PlayerSettings:
   cloudProjectId: 3d007341-0b72-42f2-9d20-5a6ab079c6d2
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: IoT4Unity_Sample
+  projectName: UnityIoT01
   organizationId: soyeong221
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
