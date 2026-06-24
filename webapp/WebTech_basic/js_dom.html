@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS DOM</title>
+    <style>
+        .old{
+            color: black;
+            background-color: lightblue;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .new{
+            color: white;
+            background-color: darkolivegreen;
+            padding: 10px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2 id="title">Hello, Javascript!!</h2>
+
+    <script>
+        // 모든 HTML의 태그를 js에서 접근가능
+        // HTMLElement 타입을 받아옴
+        let title = document.getElementById('title');
+
+        console.log(title.innerText);   // h2 태그 내 텍스트를 읽어서 콘솔 출력
+
+        title.innerText = '바꿔~';
+
+    </script>
+
+    <button onclick="greeting()">클릭</button>
+    <button ondblclick="changeText()">변경</button>
+
+    <h2 id="msg">어서오세요~</h2>
+
+    <script>
+        function greeting() {
+            alert('안녕하세요~!');
+        }
+
+        function changeText() {
+            document.getElementById("msg").innerText = '또 오세요~';
+        }
+        
+    </script>
+
+    <hr>
+
+    <h3 id="subtitle" class="old">기본 스타일</h3>
+
+    <button onclick="changeClass()">스타일변경</button>
+
+    <script>
+        function changeClass() {
+            let subtitle = document.getElementById("subtitle")
+
+         subtitle.className = 'new';
+
+        }
+    </script>
+
+</body>
+</html>

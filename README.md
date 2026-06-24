@@ -1001,7 +1001,7 @@ WpfAccessControlApp (프로젝트)
 “실제 하드웨어가 붙는다면 어느 부분이 바뀌는가”
 ```
 
-[다음](./README2.md)
+[데스크탑 학습](./README2.md)
 
 
 
