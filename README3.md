@@ -1039,7 +1039,7 @@ public void StartSpawner()
     - 한글 폰트 Assets에 복사
     - Window > TextMeshPro > Font Asset Creator 선택
     - 폰트 선택
-    - Character Set > Unicode Range(hex) 선택
+    - Character Set 선택
     - 한글 입력 범위를 `AC00-D7A3` 까지 지정
     - Generate Font Atlas 클릭
 
@@ -1124,12 +1124,41 @@ public void StartSpawner()
 #### 방 구성
 - Pandazole Home Interior 애셋으로 구성
 
-#### MQTT 패키지 불러오기
+#### NuGet 패키지 불러오기
 - Github에서 [NuGetForUnity]https://github.com/GlitchEnzo/NuGetForUnity 설치
-
-
 
 - MQTTnet은 DLL을 직접 가져와서 구성. MQTTnet 버전 충돌
 - MQTT for Unity(M2Mqtt)를 사용
 
-![alt text](image-169.png)
+
+#### M2MqttUnity 설치
+- M2Mqtt를 유니티 스크립트로 재정의해서 Unity에서 사용할 수 있게 만든 버전
+- https://github.com/gpvigano/M2MqttUnity 코드 - 다운로드 집
+- 압축해제 후
+- Project 창 Assets에 M2MqttUnity 압축해제한 Assets 폴더 복사
+- Unity에서 컴파일 진행
+
+- 테스트
+
+![alt text](image-170.png)
+
+- MQTT Publish 메시지 확인
+
+![alt text](image-171.png)
+
+#### Unity MQTT Subscribe 메시지 수신
+- Canvas UI 
+
+![alt text](image-173.png)
+
+- SmartHomeMqttClient.cs 작성
+- 빈 객체 생성 > MqttClient 명명
+- 위 스크립트 컴포넌트 지정
+- Inspector에서 필요 데이터 입력, Broker Address, User Name, Password
+    - TOPIC, 상태표시 TextMesh Pro, JSON 데이터 출력 TextMesh Pro 지정
+
+![alt text](image-172.png)
+
+- IoT Sample Project 애셋에서 CameraController.cs 가져오기
+
+- Essentials Pathway 애셋에서 SkyBox 머티리얼
