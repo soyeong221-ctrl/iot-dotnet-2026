@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JS DOM</title>
     <style>
-        .old{
+        .old {
             color: black;
             background-color: lightblue;
             padding: 10px;
             border-radius: 5px;
         }
 
-        .new{
+        .new {
             color: white;
             background-color: darkolivegreen;
             padding: 10px;
@@ -28,10 +28,9 @@
         // HTMLElement 타입을 받아옴
         let title = document.getElementById('title');
 
-        console.log(title.innerText);   // h2 태그 내 텍스트를 읽어서 콘솔 출력
+        console.log(title.innerText);  // h2 태크 내 텍스를 읽어서 콘솔출력
 
-        title.innerText = '바꿔~';
-
+        title.innerText = '야, 바꿔~~';
     </script>
 
     <button onclick="greeting()">클릭</button>
@@ -45,9 +44,8 @@
         }
 
         function changeText() {
-            document.getElementById("msg").innerText = '또 오세요~';
+            document.getElementById("msg").innerText = '또 오세요~~~';
         }
-        
     </script>
 
     <hr>
@@ -58,12 +56,10 @@
 
     <script>
         function changeClass() {
-            let subtitle = document.getElementById("subtitle")
+            let subtitle = document.getElementById('subtitle');
 
-         subtitle.className = 'new';
-
+            subtitle.className = 'new';
         }
     </script>
-
 </body>
 </html>
