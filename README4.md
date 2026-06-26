@@ -482,6 +482,8 @@ public static void Main(string[] args) {
 ### ASP.NET Core RESTAPI
 
 - 웹페이지 화면 없이 데이터만 서비스 형태
+- 웹페이지는 다른 웹/앱기술로 개발 가능
+    - Node.js, React, WPF, 안드로이드 등 여러 앱을 사용해서 개발 가능
 - 데이터포털에서 OpenAPI 서비스와 같은 웹서비스 구축
 
 
@@ -540,7 +542,222 @@ VALUES
 
 
 #### ProductsController 생성
+- Controller / ProductsController.cs 생성 - [소스](./webapp/WebApiSolution/ProductApi/Controllers/ProductsController.cs)
 
+
+#### GET - 상품 리스트 조회
+- GET 메서드 작성
+
+
+#### 실행결과
+
+![alt text](image-201.png)
+
+
+#### 일반메서드 vs 비동기메서드
+
+- 일반메서드 - DB처리가 완료될 때까지 나머지 로직이 중지
+```cs
+[HttpGet]   // GET 메서드 선언(없어도 기본)
+public IActionResult GetProducts()
+{
+    List<Product> products = new(); // new List<Product>(); 와 동일기능
+
+    using var conn = new MySqlConnection(connString);
+    conn.Open();
+
+    string query = 
+        @"
+         SELECT product_id, product_name, category, price, stock, created_at
+         FROM products
+         ORDER BY product_id DESC
+        ";      // 여러 줄 문자열: @" 또는 """
+
+    using var cmd = new MySqlCommand(query, conn);
+    using var reader = cmd.ExecuteReader();
+
+    while (reader.Read()) { //  
+        Product product = new Product
+        {
+            ProductId = reader.GetInt32("product_id"),
+            ProductName = reader.GetString("product_name"),
+            Category = reader.GetString("category"),
+            Price = reader.GetDecimal("price"),
+            Stock = reader.GetInt32("stock"),
+            CreatedAt = reader.GetDateTime("created_at")
+        };
+
+        products.Add(product);
+    
+    }
+    return Ok(products);
+```
+
+- 비동기 메서드 - 백그라운드로 동작, 다른 기능 사용
+
+![alt text](image-202.png)
+
+```cs
+[HttpGet]   // GET 메서드 선언(없어도 기본)
+public async Task<IActionResult> GetProductsAsync()
+{
+    ...
+    await conn.OpenAsync();
+
+    ...
+    using var reader = await cmd.ExecuteReaderAsync();
+
+    while (await reader.ReadAsync()) { 
+        ...
+    }
+    return Ok(products);
+}
+```
+
+- GET /api/products
+
+
+#### Get - 상품 단건 조회
+- ProductsController에 단건 조회용 메서드 생성
+
+- GET /api/porducts/id
+
+#### 실행결과
+
+
+- 성공
+
+![alt text](image-203.png)
+
+- 실패
+
+![alt text](image-204.png)
+
+- 포스트맨 결과화면
+
+![alt text](image-205.png)
+
+- 공공데이터포털 기능은 대부분 여기까지
+
+
+#### POST - 상품 등록
+- ProductsController에 단건 등록 메서드 생성
+- POST /api/products
+
+
+#### PostMan에서 테스트
+- GET 메서드 이외는 웹브라우저에서 테스트 매우 어려움
+- Swagger, Postman 등의 테스트 툴 사용 거의 필수
+
+
+#### 실행결과
+- Postman Post메서드 선택, Body > raw > JSON 형식으로 데이터 입력 > Send
+- Response 결과 맨 아래 확인
+
+![alt text](image-206.png)
+
+- 데이터 베이스 결과화면
+
+![alt text](image-207.png)
+
+
+#### Command Execute 비교
+
+|메서드|사용방법|
+|---|---|
+|ExecuteReader() | SELECT 여러 행 조회 |
+|ExecuteNonQuery() | INSERT, UPDATE, DELETE 실행 |
+|ExecuteScalar() | 값 1개 반환(COUNT, MAX/MIN, LAST_INSERT_ID ...) |
+
+- 비동기는 Async()로 작성할 것
+
+
+#### PUT - 상품 수정
+- POST 메서드로 구현 가능
+
+- PUT /api/products/id
+
+
+#### 실행결과
+- 포스트맨 결과화면
+
+![alt text](image-208.png)
+
+- 데이터 베이스 결과화면
+
+![alt text](image-209.png)
+
+- Postman에서 GET으로 변경하고 Send 확인 
+
+
+#### PATCH - 필요컬럼 수정
+
+- POST 메서드로 구현 가능. 기능을 완전 분리하고 싶을 때 사용
+- PATCH /api/products/id
+- ex) 재고 or 카테고리만 수정하는 기능을 추가하고자 할 때
+
+- Models Product.cs를 복사해서 ProductStock.cs로 변경
+- [HttpPatch("{id}/stock")] 로 URL 변경
+
+
+#### 실행결과
+- PATCH 메서드에 맞게 URL 변경
+
+![alt text](image-210.png)
+
+
+#### DELETE - 상품 삭제
+- DELETE /api/products/id
+- HttpDelete 메서드 추가
+
+
+#### 실행결과
+- 포스트맨 결과화면
+
+![alt text](image-211.png)
+
+- 데이터 베이스 결과화면
+
+![alt text](image-212.png)
+
+
+#### HEAD, OPTIONS
+- 웹서비스 사용 여부 확인
+- 웹서비스에 지원하는 메서드 확인
+
+
+#### 실행결과
+- HttpHead 결과화면
+
+![alt text](image-213.png)
+
+- HttpOptions 결과화면
+
+
+#### HttpMethod
+- [HttpMethod("GET")], [HttpMethod("POST")] 등으로 명시적으로 사용
+- 거의 사용 안 함
+
+
+### RESTAPI 서비스 사용 애플리케이션
+- 하나의 웹 서비스를 가지고 여러 종류 애플리케이션에서 사용
+
+
+#### CORS 설정
+- Cross Origin Resource Sharing: 교차 출처 자원 공유. 서버가 다른 공간에 데이터 요청을 안전하게 하도록 허용해주는 설정
+- Program.cs 추가
+
+
+#### HTML + Javascript
+
+
+#### WPF 
+
+
+#### Unity
+
+
+#### ASP.NET Core MVC
 
 
 
