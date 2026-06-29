@@ -748,17 +748,241 @@ public async Task<IActionResult> GetProductsAsync()
 - Program.cs 추가
 
 
-#### HTML + Javascript
+#### HTML + Javascript 
+
+- product-client.html 생성
+- HTML, Javascript 구현 
 
 
-#### WPF 
+##### 실행결과
+
+![alt text](image-203.png)
+
+- 일반 조회결과
+
+![alt text](image-214.png)
+
+- 부트스트랩 기본적용 결과
+
+![alt text](image-215.png)
+
+- 부트스트랩 일괄적용 화면
 
 
-#### Unity
+#### WPF 1
+
+- 공공데이터포털 부산축제정보 앱 WPF 활용
+- 부산축제정보 앱 다운사이징 코딩
 
 
-#### ASP.NET Core MVC
+##### 실행결과
 
+![alt text](image-216.png)
+
+- HTML + Javascript 실행결과 동일
+
+![alt text](image-217.png)
+
+- WPF 등록화면 및 성공메시지
+
+![alt text](image-218.png)
+
+- HTML + Javascript 에서 추가된 데이터 확인 화면
+
+
+#### 현재 상품등록 문제
+- 입력 Validation Check 구현되어 있지 않음
+
+![alt text](image-219.png)
+
+- ""(empty)는 null이 아니기 때문에 데이터 등록됨
+
+![alt text](image-220.png)
+
+- 데이터베이스에 빈 데이터 입력확인
+
+- 데이터 입력시 무조건(!) 입력 검증 로직 필요
+
+
+#### WPF 2
+
+![alt text](image-221.png)
+
+- Validation Check, Exception Handling 추가
+- 수정(PUT), 삭제(DELETE) 기능 구현
+
+
+#### 디자인 렌더링 오류
+- xaml 파일 복사한 뒤 클래스명이 중복되어서 발생
+- 새로 만든 xaml 파일의 클래스명을 전부 수정
+
+![alt text](image-222.png)
+
+
+#### 현재 구현의 문제
+- ProductCreateWindow.xaml와 ProductEditWindow.xaml가 존재
+- DB 설계 상 새로운 컬럼이 추가되면 두 화면을 모두 수정
+- 하나의 윈도우로 개발하면 한 화면만 수정의 효율성이 높음
+- ProductCreateWindow.xaml, ProductEditWindow.xaml -> ProductWindow.xaml로 통합
+- 각 창의 필수 기능, BtnSave
+
+![alt text](image-223.png)
+
+
+##### 결론
+
+![alt text](image-224.png)
+
+- 기존 방식 - WPF에 DB 핸들링 위해서 SQL 처리, 웹개발(ASP.NET 포함) 때도 DB 핸들링 SQL 처리 필요
+- REST API 방식 - DB 핸들링은 REST API 서비스에서 통합개발. 각 클라이언트에서는 서비스URL 호출(요청)으로 데이터를 처리
+
+
+### Unity + RESTAPI 애플리케이션
+- Unity URP 프로젝트 생성
+
+#### Newtonsoft Json 패키지 설치
+- Window > Package Manager > + Add package by technical name 
+    - `com.unity.nuget.newtonsoft-json` > install
+
+![alt text](image-225.png)
+
+
+#### Canvas UI 추가
+- Canvas 추가. 2D 변경
+- Button 추가 -> BtnLoad
+- 나눔고딕 폰트 추가. 이전 파일 그대로 사용
+
+![alt text](image-226.png)
+
+- Text - TextMeshPro 추가 -> Logs
+
+#### Script 작성
+- ProductApiClient.cs 생성
+
+```cs
+public class ProductApiClient : MonoBehaviour
+{
+    [SerializeField]
+    private TMP_Text txtLog;
+
+    [SerializeField]
+    private string serviceUrl = "http://localhost:5276/api/products";
+
+    public void LoadProducts()
+    {
+        StartCoroutine(GetProducts());
+    }
+
+    private IEnumerator GetProducts()
+    {
+        using UnityWebRequest request = UnityWebRequest.Get(serviceUrl);
+
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            txtLog.text = request.error;
+            yield break;
+        }
+
+        txtLog.text = request.downloadHandler.text;
+    }
+}
+```
+
+#### GameObject 연결
+- 빈 객체 -> ProductApiManager 생성
+- ProductApiClient 스크립트를 하위 컴포넌트 등록
+- TxtLog 변수에 캔버스에 추가한 Logs 텍스트 할당
+
+![alt text](image-227.png)
+
+- 스크립트의 부모 객체 ProductApiManager를 기본으로 선택
+- 실제 사용함수는 ProductApiClient.LoadProduct() 선택
+
+![alt text](image-228.png)
+
+
+#### 실행화면
+
+- API 서버 중지시 화면
+
+![alt text](image-229.png)
+
+- API 서버 정상동작 화면
+
+![alt text](image-230.png)
+
+- WPF에서 데이터 등록 후 Unity에서 재확인
+
+![alt text](image-231.png)
+
+
+#### 데이터 리스트화면(2D) 만들기
+- 화면 구조
+- Panel - HeaderPanel, ButtonPanel, DataGridHeader
+- TMPro - HeaderTitle, Lbl~ 6개
+- Button - BtnLoad
+- Scroll View
+
+![alt text](image-239.png)
+
+![alt text](image-232.png)
+
+- Product.cs 스크립트 생성 - [소스](./unity/UnityProductApp/Assets/Scripts/Product.cs)
+
+
+#### ProductRow 프리팹
+- ProductRow 객체 생성, UI 구성
+
+![alt text](image-240.png)
+
+![alt text](image-233.png)
+
+- Prefabs 폴더 드래그, 프리팹 생성
+- ProductRowUi.cs 스크립트 생성
+- ProductRow 프리팹 더블클릭 > 프리팹 에디터 화면 전환
+    - ProductRowUi.cs를 ProductRow root 객체 할당
+
+![alt text](image-234.png)
+
+
+#### ProductApiClient 스크립트 수정
+- 스크롤뷰 컨텐츠, ProductRow 프리팹 할당 추가 - [소스](./unity/UnityProductApp/Assets/Scripts/ProductApiClient.cs) 
+
+
+#### ProductApiManager 아래 스크립트
+- ProductApiClient 스크립트에 Content, Product Row 프리팹 할당
+
+![alt text](image-235.png)
+
+
+#### 실행결과
+- 컨텐츠 아래 첫번째 줄에 모두 겹쳐져서 출력
+
+
+#### 프리팹 및 컨텐트 수정
+- ProductRow 프리팹 오픈
+- Add Component > Layout Element
+- Min Height, Preferred Height 36 지정
+- Flexible Height 0 지정
+
+- View port > content 클릭
+
+![alt text](image-236.png)
+
+
+#### 실행결과
+- WPF에서 신규 데이터 입력
+
+![alt text](image-237.png)
+
+- Unity에서 신규 데이터 확인
+
+![alt text](image-238.png)
+
+- 시스템 구성도
+![alt text](image-241.png)
 
 
 ## 4. 웹 실습 프로젝트

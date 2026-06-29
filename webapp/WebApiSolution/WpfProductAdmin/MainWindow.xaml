@@ -1,0 +1,156 @@
+﻿<mah:MetroWindow x:Class="WpfProductAdmin.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:local="clr-namespace:WpfProductAdmin"
+        mc:Ignorable="d"
+        Title="제품관리" Height="450" Width="800" Loaded="MetroWindow_Loaded">
+    <mah:MetroWindow.IconTemplate>
+        <DataTemplate>
+            <iconPacks:PackIconMaterialDesign Kind="FestivalOutline" Foreground="White" Margin="10,7,0,0" />
+        </DataTemplate>
+    </mah:MetroWindow.IconTemplate>
+    <DockPanel Background="#F7F7F7">
+
+        <!-- 하단 상태바 -->
+        <StatusBar DockPanel.Dock="Bottom"
+                   Height="28"
+                   Foreground="White">
+            <StatusBarItem>
+                <TextBlock Text="RestAPI 사용앱 v0.5"/>
+            </StatusBarItem>
+            <Separator Background="White" />
+            <StatusBarItem>
+                <TextBlock x:Name="SbiStatus" />
+            </StatusBarItem>
+        </StatusBar>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- 제목 -->
+            <TextBlock Grid.Row="0"
+                       Text="제품 등록관리"
+                       FontSize="22"
+                       FontWeight="Bold"
+                       Foreground="#111"
+                       Margin="12,10,0,8"/>
+
+            <!-- 검색 영역 -->
+            <Grid Grid.Row="1" Margin="10,0,10,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center">
+
+                    <!-- TextBlock Text="페이지번호"
+                               VerticalAlignment="Center"
+                               FontWeight="Bold"
+                               Margin="0,0,8,0"/>
+
+                    <mah:NumericUpDown x:Name="NumPageNo"
+                                   Width="80"
+                                   Height="38"
+                                   Minimum="1"
+                                   Value="1"
+                                   FontSize="16"                                       
+                                   Margin="0,0,12,0"/>
+
+                    <TextBlock Text="결과수"
+                               VerticalAlignment="Center"
+                               FontWeight="Bold"
+                               Margin="0,0,8,0"/>
+
+                    <mah:NumericUpDown x:Name="NumOfRows"
+                                   Width="80"
+                                   Height="38"
+                                   Minimum="1"
+                                   Maximum="100"
+                                   Value="10"
+                                   FontSize="16"
+                                   Margin="0,0,12,0"/ -->
+
+                    <Button x:Name="BtnSearch"
+                            Width="75"
+                            Height="38"
+                            Foreground="White"                            
+                            FontWeight="Bold"
+                            Style="{StaticResource MahApps.Styles.Button.Dialogs.Accent}" Click="BtnSearch_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconBoxIcons Kind="RegularSearch" Margin="0,0,5,0" />
+                            <TextBlock Text="조 회" />
+                        </StackPanel>
+                    </Button>
+
+                    <Button x:Name="BtnCreate"
+                            Width="75"
+                            Height="38"
+                            Foreground="White"                            
+                            FontWeight="Bold"
+                            Margin="10,0,0,0"
+                            Style="{StaticResource MahApps.Styles.Button.Dialogs.Accent}" 
+                            Background="ForestGreen"
+                            Click="BtnCreate_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconMaterialDesign Kind="NewReleases" Margin="0,0,5,0" />
+                            <TextBlock Text="상품등록" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <!-- 데이터 목록 -->
+            <DataGrid Grid.Row="2"
+                      x:Name="DgrProduct"
+                      Margin="10,0,10,0"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      HeadersVisibility="Column"
+                      GridLinesVisibility="Horizontal"
+                      RowHeaderWidth="0"
+                      SelectionMode="Single"
+                      SelectionUnit="FullRow"
+                      IsReadOnly="True">
+
+                <DataGrid.Columns>
+
+                    <DataGridTextColumn Header="ID"
+                                        Binding="{Binding ProductId}"
+                                        Width="60"/>
+
+                    <DataGridTextColumn Header="상품명"
+                                        Binding="{Binding ProductName}"
+                                        Width="200"/>
+
+                    <DataGridTextColumn Header="카테고리"
+                                        Binding="{Binding Category}"
+                                        Width="120"/>
+
+                    <DataGridTextColumn Header="가격"
+                                        Binding="{Binding Price, StringFormat={}{0:N0}원}"
+                                        Width="100"/>
+
+                    <DataGridTextColumn Header="재고"
+                                        Binding="{Binding Stock}"
+                                        Width="60"/>
+
+                    <DataGridTextColumn Header="등록일"
+                                        Binding="{Binding CreatedAt, StringFormat={}{0:yyyy-MM-dd}}"
+                                        Width="*"/>
+
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </DockPanel>
+</mah:MetroWindow>
