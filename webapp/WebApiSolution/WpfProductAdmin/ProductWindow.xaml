@@ -35,6 +35,7 @@
 
         <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button x:Name="BtnSave" Content="저장" Width="90" Height="35" Margin="0,0,8,0" Click="BtnSave_Click" />
+            <Button x:Name="BtnDelete" Content="삭제" Width="90" Height="35" Margin="0,0,8,0" Click="BtnDelete_Click" />
             <Button x:Name="BtnCancel" Content="취소" Width="90" Height="35" Click="BtnCancel_Click" />
         </StackPanel>
 

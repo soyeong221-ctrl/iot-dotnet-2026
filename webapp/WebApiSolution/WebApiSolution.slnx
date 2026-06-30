@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="BookRentalShopApi/BookRentalShopApi.csproj" Id="e3178228-265f-4e1b-b2ad-27326be28e5d" />
   <Project Path="ProductApi/ProductApi.csproj" />
   <Project Path="WpfProductAdmin/WpfProductAdmin.csproj" Id="f777bfb3-64bd-4162-8e59-dcd77babdf44" />
 </Solution>

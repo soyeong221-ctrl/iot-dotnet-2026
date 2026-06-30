@@ -12,7 +12,8 @@ public class ProductApiClient : MonoBehaviour
     //private TMP_Text txtLog;
 
     [SerializeField]
-    private string serviceUrl = "http://localhost:5065/api/products";
+    // private string serviceUrl = "http://localhost:5065/api/products";   // 개발용 API 주소
+    private string serviceUrl = "http://192.168.0.4:8080/api/products";   // 도커 API 주소
 
     [SerializeField]
     private Transform content;

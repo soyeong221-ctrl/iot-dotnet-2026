@@ -984,17 +984,114 @@ public class ProductApiClient : MonoBehaviour
 - 시스템 구성도
 ![alt text](image-241.png)
 
+- MQTT 브로커를 접속해서 데이터를 가져오는 것보다 API 웹서비스를 접속해서 데이터 가져오는 것이 훨씬 간편함
 
-## 4. 웹 실습 프로젝트
 
-### IoT 스마트홈 통합 플랫폼
-- MQTT WPF + Unity + WebAPI 연동
+### ASP.NET Core 도커
+- 웹서비스를 도커 이미지로 만든 뒤 도커에서 실행하는 방법
+- MSA(MicroService Architecture) 서비스를 만들 때 효율적
 
-### 공공데이터 통합 플랫폼
--  OpenAPI 서비스 + WPF 연동
+![alt text](image-252.png)
 
-### 스마트팩토리 MES 미니 플랫폼
 
-### AI 비전 검사 시스템
+#### 도커
+- `Linux 컨테이너(기본)`와 Windows 컨테이너로 구분. 둘 사이 전환 가능
+- `Linux 컨테이너 - WSL`(Windows Subsystem for Linux)
+- Windows 컨테이너 - Hyper-V 필수
 
-### 실시간 채팅 시스템 + 챗봇 기능
+![alt text](image-243.png)
+
+
+- Windows 컨테이너 상태 - 컨테이너 없음
+
+![alt text](image-244.png)
+
+- Linux 컨테이너 상태 - MySQL 컨테이너 확인
+
+![alt text](image-245.png)
+
+- ASP.NET Core 컨테이너 두 개 모두 지원
+
+
+#### 기존 프로젝트 Docker 지원 추가
+- appsettings.json 오픈. server localhost를 해당 아이피주소로 변경!
+- 프로젝트 > Context menu > `컨테이너 지원` 선택
+
+![alt text](image-242.png)
+
+![alt text](image-246.png)
+
+- DockerFile 생성 - 도커 이미지 생성을 위한 구성 파일
+
+```dockerfile
+# Base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+WORKDIR /app
+EXPOSE 8080
+
+# Build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+COPY . .
+
+# Publish
+RUN dotnet publish -c $BUILD_CONFIGURATION -o /app/publish 
+
+# Final
+FROM base AS final
+WORKDIR /app
+COPY --from=build /app/publish .
+ENV ASPNETCORE_URLS=http://+:8080
+ENTRYPOINT ["dotnet", "ProductApi.dll"]
+```
+
+- 이미지 만들기
+
+```powershell
+# 이미지명은 소문자로
+> docker build -t productapi .
+```
+
+- 빌드 진행상황
+
+![alt text](image-247.png)
+
+```powershell
+> docker run -d --name productapi-container -p 8080:8080 productapi
+```
+- 컨테이너 실행화면
+
+![alt text](image-248.png)
+
+- 도커에서 실행되는 웹서비스 화면
+
+![alt text](image-250.png)
+
+- 디버깅용 도커 설치 확인
+
+![alt text](image-249.png)
+
+- 주의점!
+    - localhost 사용 안 됨. 서비스 중 아이피 주소로 변경
+    - 도커 컨테이너 실행 여부 확인
+    - Unity의 경우 HTTP 접속 허용
+        ![alt text](image-251.png)
+
+
+#### DevOps
+- Development + Operation - 개발과 운영을 하나의 프로세스로 연결. 소프트웨어 개발과 배포하는 문화 방법론
+- 개발 -> Git 저장 -> 자동빌드 -> Docker 이미지(Docker Hub) -> 서버 배포 -> 운영
+    - Git, GitHub, GitHub Actions(자동배포) - 소스관리
+    - Jenkins(자동배포, 자동빌드) - CI(자동빌드)
+    - Docker, Kubernetes - 컨테이너, 컨테이너 관리
+    - Azure, AMS, GCP - 클라우드
+    - Prometheus, Grafana - 모니터링
+    - ELK Stack(엘라스틱서치 스택) - 로그
+
+
+#### 전체 실행결과
+- TODO: 동영상 업로드
+
+
+[토이프로젝트](./README5.md)

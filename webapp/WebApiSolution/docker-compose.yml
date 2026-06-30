@@ -1,0 +1,6 @@
+services:
+  bookrentalshopapi:
+    image: ${DOCKER_REGISTRY-}bookrentalshopapi
+    build:
+      context: BookRentalShopApi
+      dockerfile: Dockerfile
