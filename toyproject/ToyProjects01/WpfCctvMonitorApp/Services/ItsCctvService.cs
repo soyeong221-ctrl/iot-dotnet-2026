@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Text;
+using WpfCctvMonitorApp.Common;
 using WpfCctvMonitorApp.Models;
 
 namespace WpfCctvMonitorApp.Services
@@ -26,9 +27,16 @@ namespace WpfCctvMonitorApp.Services
                 return result;
         }
 
-        public async Task<ObservableCollection<CctvInfo>> GetAllCctvListAsync()
+        public async Task<List<CctvResultDto>> GetBrideApiAsync(CctvRequest request)
         {
-            return null;
+            var req = new HttpRequestMessage(HttpMethod.Get, AppCommon.baseUrl);
+
+            req.Content = new StringContent(
+                JsonConvert.SerializeObject(request),
+                Encoding.UTF8,
+                "application/json"
+                );
+            var result = await httpClient.SendAsync(req);
         }
     }
 }

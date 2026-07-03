@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="cctv-camera.ico" />
+    <Resource Include="cctv-camera.ico" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,6 @@
 ﻿
 
-namespace WpfCctvMonitorApp.Models
+namespace ItsCctvBridgeApi.Models
 {
     public class CctvInfo
     {

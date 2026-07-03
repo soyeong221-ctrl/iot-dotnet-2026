@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace WpfCctvMonitorApp.Common
 {
     public static class AppCommon
+
     {
-        // TODO: 구버전 서비스 URL -> 변경 필요
+        public const string appName = "국가교통정보센터 CCTV 정보앱";
         public const string baseUrl = "https://openapi.its.go.kr:9443/cctvInfo";
 
         // 승인받은 API키 입력. user-secrets, setx 외부공개 안 하거나, App.config 환경변수로 분리 저장
@@ -29,7 +31,7 @@ namespace WpfCctvMonitorApp.Common
         // TODO: 향후 필요시, CCTV 위치 좌표 범위에 따른 필터링 기능 구현 가능
         public static string BuildCctvApiUrl()
         {
-     
+
             return $"{baseUrl}" +
                    $"?apiKey={ItsApiKey}" +
                    $"&type={RoadType}" +
@@ -104,6 +106,32 @@ namespace WpfCctvMonitorApp.Common
             }
 
             return text[..maxLength] + "...";
+        }
+
+        // CctvName 잘라서 분리 메서드
+        // string.Substring()으로 가능한 작업 -> But 정규식은 간결하게 패턴타입 처리 가능
+        public static (string cctvName, string roadName, string direction) ParseName(string originCctvName)
+        {
+            if (string.IsNullOrWhiteSpace(originCctvName))
+            {
+                return ("", "", "");
+            }
+
+            // "[수도권제1순환선] 성남요금소 (서울)" 문자열을 정규식 패턴으로 자르기
+            Match match = Regex.Match(
+                originCctvName,
+                @"^\[(.*?)\]\s*(.*?)(?:\((.*?)\))?$");
+
+            if (!match.Success)
+            {
+                return (originCctvName, "", "");    // 패턴매칭 실패
+            }
+
+            var roadName = match.Groups[1].Value.Trim();
+            var cctvName = match.Groups[2].Value.Trim();
+            var direction = match.Groups[3].Value.Trim();
+
+            return (cctvName, roadName, direction); // Python tuple과 동일
         }
     }
 }

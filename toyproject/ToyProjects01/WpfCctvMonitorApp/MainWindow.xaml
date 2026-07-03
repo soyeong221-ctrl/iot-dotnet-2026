@@ -8,23 +8,34 @@
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         xmlns:local="clr-namespace:WpfCctvMonitorApp"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Title="국가교통정보센터 CCTV 정보앱" Height="800" Width="1500" 
+        Title="" Height="800" Width="1500" 
         Loaded="Window_Loaded" 
         Closing="Window_Closing"
         Closed="Window_Closed">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="48"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="36"/>
         </Grid.RowDefinitions>
 
+        <ui:TitleBar 
+            x:Name="TlbMain" Grid.Row="0" 
+            Title=""
+            CloseWindowByDoubleClickOnIcon="True">
+            <ui:TitleBar.Icon>
+                <ui:ImageIcon Source="/cctv-camera.ico"/>
+            </ui:TitleBar.Icon>
+        </ui:TitleBar>
+
         <!-- 메인화면 Grid -->
-        <Grid Grid.Row="0" Margin="10">
+        <Grid Grid.Row="1" Margin="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="250"/>
                 <ColumnDefinition Width="380"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
+
 
             <!-- Col0: 도로구분, 지역검색 필터 영역 -->
             <StackPanel Grid.Column="0" Margin="0,0,10,0">
@@ -291,7 +302,7 @@
         </Grid>
 
         <!-- 하단 상태바 Border -->
-        <Border Grid.Row="1" Background="White" BorderBrush="#DDD" BorderThickness="0,1,0,0">
+        <Border Grid.Row="2" Background="White" BorderBrush="#DDD" BorderThickness="0,1,0,0">
             <Grid Margin="12,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="220"/>
@@ -319,5 +330,10 @@
                            Text="마지막 업데이트 : 14:30:25  ⟳" FontSize="12"/>
             </Grid>
         </Border>
+        
+        <!-- WPF UI용 다이얼로그 -->
+        <!--<ui:ContentDialogHost x:Name="RootContentDialogHost" Grid.Row="0"/>-->
+        
+           
     </Grid>
 </ui:FluentWindow>
