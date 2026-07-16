@@ -1,0 +1,95 @@
+﻿<mah:MetroWindow x:Class="WpfMvvm02.Views.MainView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:local="clr-namespace:WpfMvvm02.Views"
+        mc:Ignorable="d"
+        Title="{Binding Title}" Height="550" Width="1000"
+        IsCloseButtonEnabled="False"
+        mah:DialogParticipation.Register="{Binding}">
+    <mah:MetroWindow.IconTemplate>
+        <DataTemplate>
+            <iconPacks:PackIconMaterialDesign Kind="Book" Margin="10,7,0,0" Foreground="White" />
+        </DataTemplate>
+    </mah:MetroWindow.IconTemplate>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="35" />
+        </Grid.RowDefinitions>
+
+        <!-- 메뉴영역-->
+        <StackPanel Grid.Row="0">
+            <Menu IsMainMenu="True" Style="{StaticResource MahApps.Styles.Menu}">
+                <MenuItem Header="파일">
+                    <MenuItem.Icon>
+                        <iconPacks:Ionicons Kind="DocumentMD" />
+                    </MenuItem.Icon>
+
+                    <MenuItem Header="종료" Command="{Binding AppExitCommand}">
+                        <MenuItem.Icon>
+                            <iconPacks:PackIconUnicons Kind="SignoutSolid" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+
+                <MenuItem Header="관리">
+                    <MenuItem.Icon>
+                        <iconPacks:RemixIcon Kind="RemoteControl2Fill" />
+                    </MenuItem.Icon>
+
+                    <!-- 하위 메뉴아이템 -->
+
+                    <MenuItem Header="책장르" Command="{Binding ShowDivisionCommand}">
+                        <MenuItem.Icon>
+                            <iconPacks:MaterialDesign Kind="Category" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+
+                    <MenuItem Header="도서" Command="{Binding ShowBookCommand}">
+                        <MenuItem.Icon>
+                            <iconPacks:PhosphorIcons Kind="BooksFill" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+
+                    <MenuItem Header="회원" Command="">
+                        <MenuItem.Icon>
+                            <iconPacks:PhosphorIcons Kind="UserListBold" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+
+                    <MenuItem Header="대여" Command="">
+                        <MenuItem.Icon>
+                            <iconPacks:FontAwesome Kind="TruckRampBoxSolid" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+
+                <MenuItem Header="도움말">
+                    <MenuItem.Icon>
+                        <iconPacks:PhosphorIcons Kind="QuestionMarkFill" />
+                    </MenuItem.Icon>
+
+                    <MenuItem Header="프로그램 정보" Command="">
+                        <MenuItem.Icon>
+                            <iconPacks:PackIconJamIcons Kind="InfoF" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+            </Menu>
+        </StackPanel>
+
+        <!--메인 영역(장르관리, 도서관리, 회원관리, 대여관리)-->
+        <ContentControl Grid.Row="1" Content="{Binding CurrentView}"></ContentControl>
+
+        <!-- 상태바 -->
+        <StatusBar Grid.Row="2">
+            <StatusBarItem Content="{Binding CurrentViewName}"></StatusBarItem>
+            <StatusBarItem Content="TEST" HorizontalAlignment="Right"></StatusBarItem>
+        </StatusBar>
+    </Grid>
+</mah:MetroWindow>

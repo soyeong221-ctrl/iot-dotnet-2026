@@ -1,6 +1,4 @@
-﻿
-
-namespace WpfCctvMonitorApp.Models
+﻿namespace WpfCctvMonitorApp.Models
 {
     public class CctvInfo
     {

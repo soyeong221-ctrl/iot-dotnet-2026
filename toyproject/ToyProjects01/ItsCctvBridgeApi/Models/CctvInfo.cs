@@ -1,10 +1,8 @@
-﻿
-
-namespace ItsCctvBridgeApi.Models
+﻿namespace ItsCctvBridgeApi.Models
 {
     public class CctvInfo
     {
-        //public string Coordtype { get; set; }
+        //public string CoordType { get; set; }
         //public int DataCount { get; set; }
         public string RoadsectionId { get; set; } = "";
         public string FileCreateTime { get; set; } = "";
@@ -15,5 +13,6 @@ namespace ItsCctvBridgeApi.Models
         public string CoordY { get; set; } = "";
         public string CctvFormat { get; set; } = "";
         public string CctvName { get; set; } = "";
+
     }
 }

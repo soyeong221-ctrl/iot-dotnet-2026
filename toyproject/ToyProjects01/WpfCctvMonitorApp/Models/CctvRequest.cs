@@ -1,6 +1,4 @@
-﻿using static System.Net.WebRequestMethods;
-
-namespace ItsCctvBridgeApi.Models
+﻿namespace ItsCctvBridgeApi.Models
 {
     public class CctvRequest
     {

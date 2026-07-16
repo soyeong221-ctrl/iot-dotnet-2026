@@ -1,6 +1,4 @@
-﻿using static System.Net.WebRequestMethods;
-
-namespace WpfCctvMonitorApp.Models
+﻿namespace ItsCctvBridgeApi.Models
 {
     public class CctvRequest
     {
@@ -12,6 +10,7 @@ namespace WpfCctvMonitorApp.Models
         public double MaxX { get; set; }
         public double MinY { get; set; }
         public double MaxY { get; set; }
+
         // GetType() 메서드로 이름 변경 GetRetType
         public string GetRetType { get; set; } = "json";    
 
