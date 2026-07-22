@@ -1,0 +1,165 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <title>화재/연기 감지시스템</title>
+    <!-- MQTT 라이브러리 import -->
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+          crossorigin="anonymous">
+</head>
+<body class="d-flex justify-content-center align-items-center vh-100">
+
+    <div class="card" style="width: 700px;">
+        <div id="result">
+            <img src="https://placehold.co/680x400" id="resultImg" class="card-img-top" />
+        </div>
+
+        <div class="card-body">
+            <h5 class="card-title">실시간 화재 감지</h5>
+
+            <div id="fireAlarm"
+                 class="alert alert-danger d-none mt-3" role="alert">
+                <strong>화재/연기 감지!</strong>
+                <span id="fireAlarmMessage">화재 또는 연기가 감지되었습니다.</span>
+            </div>
+
+            <div class="mt-3">
+                상태 :
+                <span id="statusBadge" class="badge text-bg-success">정상</span>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+            crossorigin="anonymous"></script>
+
+    <!-- MQTT Subscribe -->
+    <script type="text/javascript">
+        let broker_addr = 'ws://127.0.0.1:9001';
+        let topic = 'visionai/firedetects';   // 화재감지 토픽
+
+        // 초기 설정 변수
+        let fireDetectCount = 0;
+        // 몇 번을 연속 감지하면 화재로 판단할지
+        const FIRE_DETECT_THRESHOLD = 5;
+
+        // 알람을 다시 표시할 수 있는 시간 간격
+        const ALARM_COOLDOWN = 1000 * 3;
+
+        // 마지막 알람시간
+        let lastAlarmTime = 0;
+
+        // 화재가 사라졌다고 판단할 수 있는 정상 프레임 수
+        let normalDetectCount = 0;
+        const NORMAL_THRESHOLD = 10;
+
+        const client = mqtt.connect(broker_addr, {
+            clientId: 'webclient_56',
+            username: 'root',
+            password: 'mqtt123456',
+            reconnectPeriod: 1000,
+            clean: true
+        });
+
+        client.on('connect', function () {
+            console.log('MQTT broker connected!');
+
+            client.subscribe(topic, (err) => {
+                if (!err) {
+                    console.log(`MQTT Subscribed to topic: ${topic}`);
+                }
+            });
+        })
+
+        // 핵심! 접속 후 Subscribe로 데이터를 받았을 때 처리
+        client.on('message', (topic, message) => {
+            try {
+                const payload = JSON.parse(message.toString());
+
+                const base64Image = payload.image;
+                let firedetect = payload.detect;
+
+                let resultImg = document.getElementById('resultImg');
+
+                resultImg.src = `data:image/jpg;base64,${base64Image}`;
+
+                // 화재감지
+                if (firedetect) {
+                    fireDetectCount++;  // 감지 수를 증가
+                    normalDetectCount = 0;
+
+                    console.log(`화재 연속 감지: ${fireDetectCount}`);
+
+                    if (fireDetectCount >= FIRE_DETECT_THRESHOLD) {
+                        const now = Date.now();
+
+                        // 마지막 알람 이후 일정시간 후에 다시 표시
+                        if (now - lastAlarmTime >= ALARM_COOLDOWN) {
+                            showDetectAlarm();  // 알람 표시
+                            lastAlarmTime = Date.now();
+                        }
+
+                        // 숫자가 지나치게 증가하는 것 제한
+                        fireDetectCount = FIRE_DETECT_THRESHOLD;
+                    }
+
+                } else {
+                    normalDetectCount++;
+                    fireDetectCount = 0;
+
+                    // 정상상태가 일정횟수를 넘어가면 알람 해제
+                    if (normalDetectCount >= NORMAL_THRESHOLD) {
+                        hideDetectAlarm();
+                        normalDetectCount = NORMAL_THRESHOLD;
+                    }
+                }
+
+            } catch (e) {
+                console.error(`Message parsing failed: ${e}`);
+            }
+        });
+
+        client.on('error', (err) => {
+            console.log(`MQTT Connection error: ${err}`);
+        });
+
+        client.on('close', () => {
+            console.log(`MQTT Disconnected from broker`);
+        });
+
+        // 알람 표시함수
+        function showDetectAlarm() {
+            const fireAlarm = document.getElementById('fireAlarm');
+            const statusBadge = document.getElementById('statusBadge');
+
+            fireAlarm.classList.remove('d-none');
+
+            statusBadge.textContent = '화재감지';
+            statusBadge.className = 'badge text-bg-danger';
+
+            // 화면을 깜빡임
+            document.body.classList.add('bg-danger-subtle');
+        }
+
+        // 알람 표시함수
+        function hideDetectAlarm() {
+            const fireAlarm = document.getElementById('fireAlarm');
+            const statusBadge = document.getElementById('statusBadge');
+
+            fireAlarm.classList.add('d-none');
+
+            statusBadge.textContent = '정상';
+            statusBadge.className = 'badge text-bg-success';
+
+            // 화면을 깜빡임
+            document.body.classList.remove('bg-danger-subtle');
+        }
+
+    </script>
+</body>
+</html>

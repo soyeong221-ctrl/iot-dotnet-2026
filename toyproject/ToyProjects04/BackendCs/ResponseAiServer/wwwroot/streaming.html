@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <title>실시간 물체인식</title>
+    <!-- MQTT 라이브러리 import -->
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+          crossorigin="anonymous">
+</head>
+<body class="d-flex justify-content-center align-items-center vh-100">
+
+    <div class="card" style="width: 700px;">
+        <div id="result">
+            <img src="https://placehold.co/680x400" id="resultImg" class="card-img-top" />
+        </div>
+
+        <div class="card-body">
+            <h5 class="card-title">실시간 물체인식</h5>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+            crossorigin="anonymous"></script>
+
+    <!-- MQTT Subscribe -->
+    <script type="text/javascript">
+        let broker_addr = 'ws://127.0.0.1:9001';
+        let topic = 'visionai/objectdetects';
+
+        const client = mqtt.connect(broker_addr, {
+            clientId: 'webclient_56',
+                username: 'root',
+            password: 'mqtt123456',
+                reconnectPeriod: 1000,
+            clean: true
+        });
+
+        client.on('connect', function () {
+            console.log('MQTT broker connected!');
+
+            client.subscribe(topic, (err) => {
+                if (!err) {
+                    console.log(`MQTT Subscribed to topic: ${topic}`);
+                }
+            });
+        })
+
+        // 핵심! 접속 후 Subscribe로 데이터를 받았을 때 처리
+        client.on('message', (topic, message) => {
+            try {
+                const payload = JSON.parse(message.toString());
+                const base64Image = payload.image;
+
+                // console.log(base64Image);
+                let resultImg = document.getElementById('resultImg');
+                resultImg.src = `data:image/jpg;base64,${base64Image}`;
+            } catch (e) {
+                console.error(`Message parsing failed: ${e}`);
+            }
+        });
+
+        client.on('error', (err) => {
+            console.log(`MQTT Connection error: ${err}`);
+        });
+
+        client.on('close', () => {
+            console.log(`MQTT Disconnected from broker`);
+        });
+
+    </script>
+</body>
+</html>
