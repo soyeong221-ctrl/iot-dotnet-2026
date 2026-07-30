@@ -1,27 +1,42 @@
-# 2026 닷넷 개발자 토이프로젝트
+# 2026 닷넷 개발자 토이 프로젝트
 
-## 웹 통합 토이 프로젝트
+## 프로젝트 목록
 
-### 공공데이터 통합 플랫폼
+### 1. 공공데이터 통합 플랫폼
+- 공공데이터 OpenAPI를 활용한 지도 기반 정보 조회 시스템
+- **기술:** Python · OpenAPI · Folium · PyQt
+- 📄 [TOYPROJECT1.md](./TOYPROJECT1.md)
 
-- [공공데이터 통합 플랫폼](./TOYPROJECT1.md)
+---
 
-### WPF MVVM 활용
+### 2. WPF MVVM 패턴 학습 및 도서관리 앱
+- MVVM 패턴을 적용한 WPF CRUD 애플리케이션
+- **기술:** C# · WPF · MVVM · MySQL
+- 📄 [TOYPROJECT2.md](./TOYPROJECT2.md)
 
-- [MVVM 패턴 학습 + 앱개발](./TOYPROJECT2.md)
+---
 
-### 깃허브 대문 작성
+### 3. GitHub 프로필 꾸미기
+- GitHub README 및 프로필 페이지 제작
+- **기술:** Markdown · GitHub · Shields.io
+- 📄 [TOYPROJECT3.md](./TOYPROJECT3.md)
 
-- [GitHub 대문 ReadMe](./TOYPROJECT3.md)
+---
 
-### AI 비전 검사 시스템
+### 4. FastAPI 기반 AI 비전검사 및 실시간 모니터링 시스템
+- FastAPI · YOLO · MQTT(WebSocket)를 활용한 AI 객체 인식 시스템
+- **기술:** Python · FastAPI · OpenCV · YOLO · MQTT
+- 📄 [TOYPROJECT4.md](./TOYPROJECT4.md)
 
-- [Python AI + WebAPI + MQTT/WS 연계](./TOYPORJECT4.md)
+---
 
-### 스마트팩토리 MES 미니 플랫폼
+### 5. 컨베이어벨트 기반 스마트 공정관리 시스템
+- Arduino, Raspberry Pi, MQTT, Unity를 활용한 스마트팩토리 공정관리
+- **기술:** Arduino · Raspberry Pi · MQTT · Unity · Python
+- 📄 [TOYPROJECT5.md](./TOYPROJECT5.md)
 
-- [컨베이어벨트 조별 + MQTT + (WPF) + Unity 연계](./TOYPROJECT5.md)
-
+---
+## 예정
 ### IoT 스마트홈 통합 플랫폼
 
 - MQTT WPF + WebAPI + Unity 연계 
@@ -35,18 +50,13 @@
 
 - Python AI + SignalR API
 
-### 취업처 설명
 
-- 사람인, 잡코리아 확인
-    - 분야 입력(임베디드)
-    - 신입 선택, 학력 미선택
-    - 임베디드 취업처 부산 전체 약 5%
-
-### 네트워크 연결 설정
+### (번외) 네트워크 연결 설정
 
 - 여러사람이 같이 한 PC(서버) 공유할 수 있도록 공유기/라우터 설정
 
-![alt text](image-335.png)
+
+![alt text](image-353.png)
 
 - 사용 중 공유기 정보확인
 

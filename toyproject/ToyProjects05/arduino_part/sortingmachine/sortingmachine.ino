@@ -70,6 +70,8 @@ void setup() {
 
 // 반복작업
 void loop() {
+  analogWrite(PIN_DC_SPEED, 0);   // 나중에 주석 처리
+
   // 제품 적재여부 확인
   if (digitalRead(PIN_IR) == HIGH) return; // IR센서는 물체감지 시 LOW 전달
 

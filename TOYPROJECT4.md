@@ -1,10 +1,62 @@
-# 토이 프로젝트
+# 토이 프로젝트 4
 
-출처 : 자바 스프링부트 프로젝트와 파이썬 AI 프로젝트 연결하기(허진경 / 부크크) 
+출처 : 자바 스프링부트 프로젝트와 파이썬 AI 프로젝트 연결하기(허진경 / 부크크)
+
+## FastAPI 기반 AI 비전검사 및 실시간 모니터링 시스템
+
+### 프로젝트 소개
+
+FastAPI 기반 AI 서버와 ASP.NET Core 웹 서버를 연동하여 이미지 및 실시간 영상 객체 인식 시스템을 구현하였다.
+
+YOLO 기반 객체 인식 모델을 활용하여 이미지, 웹캠, 동영상의 객체를 인식하고, MQTT(WebSocket)를 이용해 객체 인식 결과를 실시간으로 웹에 스트리밍하였다. 또한 화재·연기 감지 모델을 적용하여 실시간 모니터링 및 알람 시스템을 구현하였다.
+
+### 주요 기능
+
+- FastAPI 기반 AI REST API 서버 구축
+- ASP.NET Core와 Python AI 서버 연동
+- YOLO 기반 이미지 객체 인식
+- 웹캠 및 동영상 실시간 객체 인식
+- MQTT(WebSocket) 기반 실시간 스트리밍
+- 객체 인식 결과 실시간 웹 모니터링
+- 화재·연기 감지 및 알람 시스템 구현
+
+### 기술 스택
+
+`Python` · `FastAPI` · `YOLO` · `OpenCV` · `PyTorch` · `ASP.NET Core` · `MQTT` · `WebSocket` · `Uvicorn`
+
+### 프로젝트 구조
+
+```text
+ASP.NET Core Web
+        │
+ REST API 요청
+        ▼
+ FastAPI
+        │
+YOLO + OpenCV
+        │
+객체 인식 결과 반환
+        ▼
+ MQTT(WebSocket)
+        │
+실시간 스트리밍
+        ▼
+웹 모니터링 / 화재·연기 감지
+```
+
+### 빠른 이동
+
+- [Python WebAPI 서비스](#python-webapi-서비스)
+- [Python AI 물체인식](#python-ai-물체인식)
+- [ASP.NET Core WebSite](#aspnet-core-website)
+- [동영상·웹캠 실시간 객체인식](#동영상-웹캠-실시간-객체인식)
+- [화재·연기 감지 알람시스템](#화재연기-감지-알람시스템)
+
+---
 
 ## AI 비전검사 시스템
 
-![alt text](image-299.png)
+![AI 비전검사 시스템](image-361.png)
 
 ### Python WebAPI 서비스
 
@@ -58,7 +110,7 @@
 > python main01.py
 ```
 
-![alt text](image-300.png)
+![alt text](image-362.png)
 
 #### FastAPI docs
 
@@ -85,14 +137,13 @@ if __name__ == '__main__':
 
 - URL 뒤 ?변수명=값&변수명=값 : [소스](./toyproject/ToyProjects04/pythonAi/main03.py)
 
-![alt text](image-301.png)
-
+![alt text](image-365.png)
 
 #### Pydantic 모델 사용
 
 - POST 요청으로 JSON을 데이터를 받을때 사용하는 모델 패키지. C# Newtonsoft.Json과 동일한 역할 : [소스](./toyproject/ToyProjects04/pythonAi/main04.py)
 
-![alt text](image-302.png)
+![alt text](image-366.png)
 
 - 데이터 입력시 Validation 체크 
 
@@ -104,13 +155,13 @@ if __name__ == '__main__':
 }
 ```
 
-![alt text](image-303.png)
+![alt text](image-367.png)
 
 - products 배열(리스트)에 제품 등록
 
-![alt text](image-304.png)
+![alt text](image-368.png)
 
-![alt text](image-305.png)
+![alt text](image-369.png)
 
 #### Put/Delete 메서드 처리 API
 
@@ -146,7 +197,7 @@ async def root():
     return FileResponse('./test01.png', media_type='image/png')
 ```
 
-![alt text](image-306.png)
+![alt text](image-370.png)
 
 #### Pillow 오픈 뒤 전송
 
@@ -166,20 +217,20 @@ async def root():
 
 - detectObjects() : [소스](./toyproject/ToyProjects04/pythonAi/main05.py)
 
-![alt text](image-307.png)
+![alt text](image-371.png)
 
 - 신뢰도 표시
 
-![alt text](image-311.png)
+![alt text](image-372.png)
 
 #### 결과이미지 타서버 요청및 인식결과 응답
 
 - Post 함수 : [소스](./toyproject/ToyProjects04/pythonAi/main05.py)
 - 타 서버에서 이미지 객체 인식을 요청해서, 인식된 결과를 돌려주는 작업
 
-![alt text](image-309.png)
+![alt text](image-373.png)
 
-![alt text](image-310.png)
+![alt text](image-374.png)
 
 ### ASP.NET Core WebSite
 
@@ -212,7 +263,7 @@ async def root():
 
 - 웹캠, 동영상 물체인식 - [소스](./toyproject/ToyProjects04/pythonAi/main06.py)
 
-![alt text](image-313.png)
+![alt text](image-375.png)
 
 #### MQTT 전송
 

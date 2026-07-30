@@ -1,27 +1,26 @@
-// Color Sensor
-#include <Wire.h>
-#include <Adafruit_TCS34725.h>
+int motorSpeedPin = 10;
+int motorDirectionPin = 12;
+int value;
 
-Adafruit_TCS34725 TCS = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
-
-void setup() {
-  Serial.begin(19200);
-  TCS.begin();  
+void setup() {  
+  Serial.begin(9600);
+  noTone(4);
+  pinMode(motorDirectionPin, OUTPUT);
+  digitalWrite(motorDirectionPin, HIGH);
+  value = 80;
+  analogWrite(motorSpeedPin, value);
 }
 
 void loop() {
-  uint16_t clear, red, green, blue;
-  delay(100);
-  TCS.getRawData(&red, &green, &blue, &clear);
+  if (Serial.available()) {
+    value = Serial.parseInt();
+    if (value >= 255) {
+      value = 255;
+    } else if (value <= 0) {
+      value = 0;
+    }
 
-  int r = map(red, 0, 21504, 0, 2000);
-  int g = map(green, 0, 21504, 0, 2000);
-  int b = map(blue, 0, 21504, 0, 2000);
-
-  Serial.print("    R: ");
-  Serial.print(r);
-  Serial.print("    G: ");
-  Serial.print(g);
-  Serial.print("    B: ");
-  Serial.println(b);
+    Serial.println(value);
+    analogWrite(motorSpeedPin, value);
+  }  
 }

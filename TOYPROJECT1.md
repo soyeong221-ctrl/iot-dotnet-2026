@@ -1,7 +1,199 @@
-# 웹 통합 토이프로젝트
+# 토이 프로젝트
 
+# 국가교통정보센터 CCTV 모니터링 시스템
 
-## 국가교통정보센터 CCTV 정보앱
+국가교통정보센터의 ITS Open API를 활용하여 전국 고속도로·국도 CCTV를 검색하고, 실시간 영상과 위치 정보를 함께 확인할 수 있도록 구현한 WPF 기반 데스크톱 애플리케이션입니다.
+
+WPF 클라이언트가 외부 Open API를 직접 호출하지 않고, ASP.NET Core Web API로 구현한 브릿지 서버를 통해 데이터를 전달받도록 구성했습니다. 이를 통해 API 인증키를 클라이언트에서 분리하고, 외부 API 요청과 화면 표시 기능의 역할을 구분했습니다.
+
+---
+
+## 프로젝트 개요
+
+| 항목      | 내용                                             |
+| ------- | ---------------------------------------------- |
+| 프로젝트 유형 | 개인 토이프로젝트                                      |
+| 플랫폼     | Windows Desktop                                |
+| 클라이언트   | C# · WPF                                       |
+| 서버      | ASP.NET Core Web API                           |
+| 외부 서비스  | 국가교통정보센터 ITS Open API                          |
+| 주요 기능   | 지역별 CCTV 검색, 실시간 영상 재생, 지도 마커 표시, CCTV 상세정보 조회 |
+
+---
+
+## 주요 기능
+
+* 전국 시·도 단위의 위도·경도 범위를 이용한 CCTV 검색
+* 고속도로와 국도 CCTV 구분 조회
+* LibVLCSharp을 활용한 HLS 실시간 영상 재생
+* WebView2와 Leaflet.js를 활용한 CCTV 위치 지도 표시
+* 선택한 CCTV의 이름, 좌표, 영상 URL 등 상세정보 제공
+* 스트리밍 연결 성공·실패 상태 표시
+* 검색 중 ProgressBar를 이용한 진행 상태 표시
+* 초기화 버튼을 통한 검색 조건, 목록, 영상 및 지도 초기화
+* 영상 재생 실패와 API 키 누락 등에 대한 예외 처리
+
+---
+
+## 시스템 구성
+
+```text
+┌──────────────────────┐
+│ WpfCctvMonitorApp     │
+│ WPF Client            │
+│                      │
+│ - CCTV 검색 및 목록    │
+│ - LibVLCSharp 영상 재생│
+│ - WebView2 지도 표시   │
+└──────────┬───────────┘
+           │ HTTP / JSON
+           ▼
+┌──────────────────────┐
+│ ItsCctvBridgeApi      │
+│ ASP.NET Core Web API │
+│                      │
+│ - API 인증키 관리      │
+│ - 외부 API 요청 중계   │
+│ - 응답 데이터 변환     │
+└──────────┬───────────┘
+           │ HTTP
+           ▼
+┌──────────────────────┐
+│ 국가교통정보센터       │
+│ ITS Open API          │
+└──────────────────────┘
+```
+
+### 설계 의도
+
+ITS Open API 인증키가 WPF 클라이언트에 직접 노출되지 않도록 ASP.NET Core 기반 브릿지 서버를 구성했습니다. 클라이언트는 브릿지 서버에 필요한 검색 조건만 전달하고, 서버가 인증키와 외부 API 호출을 담당하도록 역할을 분리했습니다.
+
+---
+
+## 기술 스택
+
+### Client
+
+* C# · WPF
+* Wpf.Ui
+* LibVLCSharp.WPF
+* VideoLAN.LibVLC.Windows
+* Microsoft.Web.WebView2
+* Newtonsoft.Json
+* Leaflet.js
+
+### Server
+
+* ASP.NET Core Web API
+* REST API
+* HttpClient
+* JSON 직렬화 및 역직렬화
+* Kestrel Web Server
+* appsettings.json
+
+---
+
+## 구현 구조
+
+```text
+WpfCctvMonitorApp
+├── Common
+│   ├── AppCommon.cs
+│   └── GeoBound.cs
+├── Models
+│   ├── CctvInfo.cs
+│   ├── CctvRequest.cs
+│   ├── CctvResponse.cs
+│   └── CctvResultDto.cs
+├── Services
+│   └── ItsCctvService.cs
+├── MainWindow.xaml
+└── MainWindow.xaml.cs
+```
+
+* `Common`: 공통 설정과 지역별 위도·경도 범위 관리
+* `Models`: API 요청 및 응답 데이터 모델
+* `Services`: 브릿지 API 호출과 CCTV 데이터 처리
+* `MainWindow`: 검색, 영상 재생, 지도 표시 및 상태 관리
+
+---
+
+## 트러블슈팅
+
+### 1. API 키의 클라이언트 노출 문제
+
+초기에는 WPF 클라이언트가 외부 API 주소와 인증키를 직접 사용했습니다. 이후 인증키가 클라이언트 코드에 노출되는 문제를 개선하기 위해 ASP.NET Core 브릿지 API를 추가했습니다.
+
+클라이언트는 검색 조건을 서버에 전달하고, 서버가 인증키를 이용해 ITS Open API를 호출하도록 구조를 변경했습니다.
+
+### 2. 클라이언트와 서버의 데이터 모델 불일치
+
+기존 `CctvInfo` 중심 구조를 `CctvResultDto` 기반 구조로 변경하는 과정에서 이벤트 핸들러와 서비스 메서드의 매개변수 타입이 일치하지 않는 오류가 발생했습니다.
+
+모델을 참조하는 목록 선택, 상세정보 출력, 지도 마커 표시 로직을 함께 점검하고 수정하여 클라이언트와 서버 간 데이터 계약을 일치시켰습니다.
+
+### 3. 서버 포트 불일치
+
+ASP.NET Core 서버의 실행 프로필에 따라 포트가 달라지면서 WPF 클라이언트에서 연결 거부 오류가 발생했습니다.
+
+서버 콘솔의 `Now listening on` 주소와 클라이언트의 Bridge API 주소를 비교하여 포트 불일치를 확인하고 수정했습니다.
+
+### 4. 실시간 영상 재생 실패 처리
+
+일부 CCTV 영상 URL은 중단되거나 접속할 수 없는 경우가 있었습니다. LibVLCSharp 재생 상태를 확인하여 정상, 연결 불량, 미연결 상태를 화면에 구분해 표시하도록 예외 처리를 추가했습니다.
+
+---
+
+## 실행 방법
+
+1. `ItsCctvBridgeApi` 프로젝트의 `appsettings.json`에 ITS Open API 인증키를 설정합니다.
+2. `ItsCctvBridgeApi` 서버를 실행합니다.
+3. 서버 콘솔에 표시되는 실행 주소와 포트를 확인합니다.
+4. WPF 클라이언트의 Bridge API 주소를 서버 포트에 맞게 설정합니다.
+5. `WpfCctvMonitorApp`을 실행합니다.
+6. 지역과 도로 종류를 선택한 후 검색 버튼을 누릅니다.
+7. CCTV 목록에서 항목을 선택하면 영상과 지도 위치가 표시됩니다.
+
+---
+
+## 실행 화면
+
+### 기본 화면
+
+![기본 화면](기본화면.png)
+
+### 스트리밍 연결 불량
+
+![연결 불량 화면](연결미흡.png)
+
+### 정상 실행
+
+![정상 실행 화면](정상실행.png)
+
+---
+
+## 배운 점
+
+이 프로젝트를 통해 외부 Open API와 데스크톱 애플리케이션을 연동하는 방법을 익혔습니다. 또한 API 인증키를 서버로 분리하면서 클라이언트와 서버의 역할을 구분하고, 데이터 모델과 API 요청 형식이 변경될 때 관련 코드 전체의 정합성을 점검하는 경험을 했습니다.
+
+특히 연결 거부, 데이터 타입 불일치, 영상 재생 실패 등의 문제를 로그와 실행 상태를 기준으로 분석하며 클라이언트·서버 통합 환경의 디버깅 역량을 키울 수 있었습니다.
+
+---
+
+## 향후 개선 방향
+
+* CCTV 목록 페이징 또는 무한 스크롤 구현
+* 영상 연결 실패 시 자동 재시도 기능 추가
+* 즐겨찾기 저장 및 불러오기 기능 완성
+* API 서버 주소를 설정 파일로 분리
+* 검색 결과 캐싱을 통한 반복 요청 감소
+* 경찰청 도시교통정보센터 Open API 추가 연동
+
+---
+
+# 개발 과정 및 학습 기록
+
+> 아래 내용은 프로젝트를 구현하면서 진행한 설정, 테스트, 오류 수정 및 리팩터링 과정을 기록한 개발일지입니다.
 
 
 ### 개요
@@ -12,7 +204,7 @@
 - C# 14(.NET 10.0)
 - WPF
 - Wrapping RESTAPI 서비스
-- ProgressBar?
+- ProgressBar
 - Newtonsoft.Json
 - LibVLCSharp.WPF
 - ITS 국가교통정보센터 OpenAPI - [링크](https://www.its.go.kr/)
@@ -336,172 +528,3 @@ PM> Install-Package WPF-UI
 |외부 API | ITS 국가교통정보센터 OpenAPI |
 |API 방식 | REST API |
 |웹아키텍처 | Model-Service-Controller Layer |
-
-
-
-# [정리1]🚦 WpfCctvMonitorApp
-
-**국가교통정보센터(ITS) Open API 기반 실시간 CCTV 모니터링 데스크톱 애플리케이션**
-
-> C# / WPF 기반으로 전국 고속도로·국도 CCTV 스트리밍 영상을 지도와 함께 실시간으로 조회할 수 있는 트래픽 모니터링 툴입니다.
-
----
-
-## 📌 프로젝트 개요
-
-| 항목 | 내용 |
-|---|---|
-| 개발 기간 | 2026 (개인 프로젝트) |
-| 플랫폼 | Windows Desktop (WPF, .NET) |
-| 아키텍처 | Client(WPF) ↔ Bridge API(ASP.NET Core) ↔ ITS Open API |
-| 주요 기능 | 지역별 CCTV 검색, 실시간 HLS 스트리밍 재생, 지도 마커 표시 |
-
----
-
-## 🖥️ 주요 기능
-
-- **지역별 CCTV 검색**: 전국 17개 시/도 단위로 위경도 범위(Bounding Box)를 설정해 고속도로/국도 CCTV 목록 조회
-- **실시간 영상 스트리밍**: LibVLCSharp을 이용한 HLS(m3u8) 라이브 영상 재생
-- **지도 연동**: WebView2 + Leaflet.js 기반으로 선택한 CCTV 위치를 지도에 마커로 표시
-- **연결 상태 모니터링**: 스트리밍 연결 성공/실패를 실시간 UI로 표시 (정상/불량/미연결)
-- **도로 타입 필터링**: 고속도로(ex) / 국도(its) 토글 스위치
-
----
-
-## 🏗️ 아키텍처
-
-```
-┌─────────────────────┐     HTTP GET      ┌──────────────────────┐     HTTP GET      ┌─────────────────────┐
-│  WpfCctvMonitorApp   │ ───────────────▶  │  ItsCctvBridgeApi     │ ───────────────▶  │  국가교통정보센터    │
-│  (WPF Client)        │                   │  (ASP.NET Core)       │                   │  ITS Open API        │
-│  - LibVLCSharp        │ ◀───────────────  │  - API Key 서버 보관  │ ◀───────────────  │                       │
-│  - WebView2 + Leaflet │     JSON 응답      │  - 요청/응답 중계     │     XML/JSON       │                       │
-└─────────────────────┘                   └──────────────────────┘                   └─────────────────────┘
-```
-
-**설계 의도**: ITS Open API 인증키를 클라이언트(WPF)에 노출시키지 않기 위해, 별도의 ASP.NET Core 브릿지 서버(`ItsCctvBridgeApi`)를 두어 API 키 관리와 외부 요청을 서버 단에서 전담하도록 분리했습니다.
-
----
-
-## 🛠️ 기술 스택
-
-**Client (WpfCctvMonitorApp)**
-- C# / WPF (.NET)
-- LibVLCSharp — HLS 영상 스트리밍 재생
-- WebView2 — Leaflet.js 지도 렌더링
-- Wpf.Ui — Fluent Design UI, 다크/라이트 테마
-- Newtonsoft.Json — JSON 직렬화/역직렬화
-
-**Server (ItsCctvBridgeApi)**
-- ASP.NET Core Web API
-- 국가교통정보센터(ITS) Open API 연동
-
----
-
-## 🧩 트러블슈팅 & 배운 점
-
-프로젝트 진행 중 겪은 대표적인 이슈와 해결 과정입니다.
-
-1. **API 응답 구조 변경 대응**
-   초기에는 서버가 문자열 URL(`GetCctvListAsync(string apiUrl)`)을 직접 호출하는 방식이었으나, API 키를 서버로 이전하며 요청 파라미터를 `CctvRequest` 객체로 캡슐화하는 방식(`GetBridgeApiAsync(CctvRequest request)`)으로 리팩터링. 이 과정에서 클라이언트-서버 간 메서드 시그니처 불일치로 인한 타입 변환 오류를 다수 디버깅.
-
-2. **포트/엔드포인트 불일치 디버깅**
-   개발 환경에서 서버 실행 포트가 launch profile에 따라 달라지는 문제를 겪으며, 클라이언트의 `baseUrl` 상수값과 서버 콘솔 로그(`Now listening on...`)를 대조하여 연결 거부(Connection Refused) 원인을 추적.
-
-3. **XAML 파싱 오류 / 필드 선언 누락**
-   불완전한 필드 선언으로 인한 XAML 파서 오류를 코드 비하인드와 XAML 간 바인딩 대조를 통해 원인 규명 및 수정.
-
-4. **모델 리팩터링에 따른 연쇄 수정**
-   `CctvInfo` → `CctvResultDto`로 데이터 모델을 교체하며, 이를 참조하는 모든 이벤트 핸들러(선택 이벤트, 상세정보 표시, 지도 마커 표시 등)의 타입을 일괄 점검·수정.
-
-> 💡 이 프로젝트를 통해 **클라이언트-서버 간 계약(Contract) 변경 시 발생하는 연쇄적 영향을 추적하고 정합성을 맞추는 디버깅 역량**과, **민감정보(API Key)를 서버 사이드로 격리하는 아키텍처 설계 감각**을 기를 수 있었습니다.
-
----
-
-## 🚀 실행 방법
-
-1. `ItsCctvBridgeApi` 서버 프로젝트 실행 (콘솔에 표시되는 포트 확인)
-2. `WpfCctvMonitorApp/Common/AppCommon.cs`의 `baseUrl`을 서버 포트에 맞게 설정
-3. `WpfCctvMonitorApp` 실행
-4. 지역 선택 → 도로 타입(고속도로/국도) 선택 → 검색 버튼 클릭
-5. CCTV 목록에서 항목 선택 시 실시간 스트리밍 및 지도 마커 표시
-
----
-
-## 📷 스크린샷
-
-> _(포트폴리오 제출 시 실행 화면 캡처 삽입 예정)_
-
----
-
-## 📝 향후 개선 방향
-
-- [ ] CCTV 목록 페이징/무한스크롤 처리
-- [ ] 스트리밍 재연결 로직 고도화 (자동 재시도)
-- [ ] 브릿지 API 응답 캐싱으로 반복 조회 성능 개선
-- [ ] 단위 테스트 추가 (Bridge API 서비스 레이어)
-
-
-# [open api 없는 버전] ToyProjects01 - ITS CCTV 모니터링 앱
-
-공공 ITS 교통정보 OpenAPI를 활용해 지역별 CCTV를 검색하고, 선택한 CCTV의 실시간 영상을 재생하며, 지도에서 위치와 상세 정보를 함께 확인할 수 있는 WPF 기반 데스크톱 애플리케이션입니다.
-
-## 주요 기능
-
-- 지역별 CCTV 검색
-- 고속도로 / 국도 전환
-- CCTV 목록 표시
-- 선택한 CCTV 실시간 영상 재생
-- WebView2 + Leaflet 기반 지도 마커 표시
-- CCTV 상세 정보 표시
-- 로딩창 및 연결 상태 표시
-
-## 화면 구성
-
-- 좌측
-  - 도로 구분 선택
-  - 지역 선택
-  - 검색 / 초기화 버튼
-
-- 중앙
-  - CCTV 목록
-  - CCTV 영상 재생 영역
-
-- 우측 하단
-  - 지도
-  - CCTV 상세 정보
-
-- 하단
-  - 연결 상태
-  - 선택한 CCTV 이름
-  - 영상 URL
-  - 마지막 업데이트 시간
-
-## 동작 흐름
-
-1. 사용자가 지역과 도로 구분을 선택합니다.
-2. 검색 버튼을 누르면 해당 조건에 맞는 CCTV 목록을 조회합니다.
-3. CCTV 목록이 화면에 표시됩니다.
-4. 사용자가 목록에서 CCTV를 선택하면 영상이 재생됩니다.
-5. 동시에 지도 마커와 상세 정보, 상태바가 함께 갱신됩니다.
-
-## 기술 스택
-
-- `WPF`
-- `LibVLCSharp`
-- `WebView2`
-- `Leaflet`
-- `Newtonsoft.Json`
-- `.NET 10`, `C#`
-
-## 구현 포인트
-
-- `GeoBound`와 지역 목록을 이용해 검색 범위를 관리
-- CCTV 이름을 정규식으로 분리해 노선명, CCTV명, 방향을 표시
-- 선택한 CCTV URL을 `LibVLCSharp`으로 재생
-- `WebView2` 내부의 Leaflet 지도로 CCTV 위치를 시각화
-- 로딩창과 상태바를 넣어 사용자 피드백을 강화
-
-## 포트폴리오 소개 문구
-
-공공 ITS CCTV OpenAPI를 연동한 WPF 기반 모니터링 앱입니다. 지역 및 도로 구분별로 CCTV를 조회하고, 선택한 CCTV의 실시간 영상과 지도 위치, 상세 정보를 함께 확인할 수 있도록 구현했습니다.
