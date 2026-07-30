@@ -46,32 +46,32 @@
 
 - 여러사람이 같이 한 PC(서버) 공유할 수 있도록 공유기/라우터 설정
 
-![alt text](image-291.png)
+![alt text](image-335.png)
 
 - 사용 중 공유기 정보확인
 
-![alt text](image-292.png)
+![alt text](image-336.png)
 
 - 현재 포트포워딩 상태
 
-![alt text](image-293.png)
+![alt text](image-337.png)
 
 - MQTT 포트포워드 설정 지정
 
-![alt text](image-294.png)
+![alt text](image-338.png)
 
 - 이후 설정 저장
 
-![alt text](image-295.png)
+![alt text](image-339.png)
 
 - 윈도우(OS) 방화벽 포트 연결 허용 설정
 
-![alt text](image-297.png)
+![alt text](image-340.png)
 
 - 외부 아이피로 접속 확인
 
 #### MQTT 브로커 접속
 
-![alt text](image-298.png)
+![alt text](image-341.png)
 
 - MQTT Explorer에서 Publish 확인
