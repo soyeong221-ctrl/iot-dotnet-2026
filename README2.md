@@ -664,12 +664,14 @@ WpfBusanFoodApp
 ### 주요 기능
 
 ![alt text](image-60.png)
+
 1. 페이지 번호와 결과 수를 이용한 데이터 조회
   - 부산맛집정보 OpenAPI 호출
   - 맛집명, 구군, 주소, 대표메뉴, 전화번호 표시
   - API 내부 고유번호인 UC_SEQ 대신 페이지번호와 결과수를 기준으로 화면 표시용 순번(DisplayNo)을 계산하여 표시.
 
 ![alt text](image-61.png)
+
 2. DataGrid 행 더블클릭 시 상세정보 창 표시
   - 상세정보 창에서 대표 이미지, 주소, 대표메뉴, 전화번호, 홈페이지, 상세 설명 표시
   - 상세 설명의 HTML 태그 제거 후 텍스트로 출력
@@ -677,21 +679,17 @@ WpfBusanFoodApp
   - 홈페이지 링크 클릭 시 기본 브라우저 실행
 
 ![alt text](image-62.png)
+
 3. 상태표시줄에 데이터 로드 결과 표시
  - NLog를 이용한 앱 실행 및 API 조회 로그 기록
 
 ![alt text](image-63.png)
+
 4. 현재 조회된 맛집 목록 중 하나를 무작위로 선택하여 상세정보를 보여주는 "오늘 뭐 먹지?" 기능 추가
 
 [소스폴더](./wpf/WpfPracticeSolution/WpfBusanFoodApp/)
 
 
-#### Dummy IoT Data 생성
-- 1초마다 DB에 저장
-
-#### SmartHome 모니터링 앱
-- MQTT Subscribe 기능
-
-### MVVM은 나중에
+### MVVM은 나중에 ..
 
 [Unity 학습](./README3.md)
