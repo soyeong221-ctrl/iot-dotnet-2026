@@ -614,6 +614,7 @@ password_file C:/Program Files/Mosquitto/password.txt
 
 #### 실행화면
 
+https://github.com/user-attachments/assets/05c16f31-09d3-403e-ae4d-44c6775ecff1
 
 #### MQTT Subscribe 앱
 - MQTT 메시지 수신, DB 저장 기능
@@ -621,6 +622,7 @@ password_file C:/Program Files/Mosquitto/password.txt
 
 ##### 구독 실행화면
 
+https://github.com/user-attachments/assets/0844072f-f579-4127-a76e-351a69ffcc25
 
 ##### NuGet 패키지 설치
 - MySQLConnector 추가
