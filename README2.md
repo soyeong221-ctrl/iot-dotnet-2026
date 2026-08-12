@@ -158,9 +158,13 @@ https://github.com/user-attachments/assets/9832eaaf-8ef5-4c61-bffe-ffcf842fbce9
 - 구성관리자 Debug -> Release로 변경 빌드
 - 배포...
 
-#### 전체 실행결과
+### 전체 실행결과
 
+<<<<<<< Updated upstream
 https://github.com/user-attachments/assets/c1933af5-77dc-486d-9791-2414751a07de
+=======
+https://github.com/user-attachments/assets/b884151e-350e-457e-bfec-6dd2fa818f10
+>>>>>>> Stashed changes
 
 - [소스폴더](./wpf/WpfPracticeSolution/WpfCafeKiosk/)
 
