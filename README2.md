@@ -6,9 +6,9 @@
 - [1.2 OpenAPI 연동앱 개발](#12-openapi-연동앱-개발)
   - [부산축제 정보 앱](#부산축제-정보-앱)
 - [1.3 SmartHome 솔루션](#13-smarthome-솔루션)
-- [부산맛집 정보 WPF 앱](#부산맛집-정보-wpf-앱)
+- [OpenAPI를 사용한 맛집정보제공 앱: WpfBusanFoodApp](#openapi를-사용한-맛집정보제공-앱-wpfbusanfoodapp)
 - [Unity 학습](./README3.md)
-
+  
 ---
 
 ## 1. WPF 실습
