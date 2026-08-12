@@ -640,6 +640,25 @@ CREATE TABLE sensor_data
 );
 ```
 
+##### DB 저장 확인
+
+![alt text](image-403.png)
+
+![alt text](image-404.png)
+
+##### 20시간 실행결과]
+
+- 대략 29만4천건 저장
+- `SELECT count(*) FROM sensor_data;`
+
+![alt text](image-405.png)
+
+---
+
+#### SmartHome 모니터링 앱
+- MQTT Subscribe 기능
+
+
 ## OpenAPI를 사용한 맛집정보제공 앱: WpfBusanFoodApp
 
 ### 개발 목적
@@ -702,7 +721,5 @@ WpfBusanFoodApp
 
 [소스폴더](./wpf/WpfPracticeSolution/WpfBusanFoodApp/)
 
-
-### MVVM은 나중에 ..
 
 [Unity 학습](./README3.md)
