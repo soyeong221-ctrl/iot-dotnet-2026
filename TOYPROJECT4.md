@@ -345,7 +345,7 @@ https://github.com/user-attachments/assets/90497b96-f081-4a47-a52e-3dc3be9547a1
 
 - 화재감지 모니터링 - [firedetect.html](./toyproject/ToyProjects04/BackendCs/ResponseAiServer/wwwroot/firedetect.html)
 
-- 실핼결과
+- 실행결과
 
 ![alt text](image-312.png)
 
