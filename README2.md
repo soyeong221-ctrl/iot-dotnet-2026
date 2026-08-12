@@ -149,8 +149,7 @@ https://github.com/user-attachments/assets/9832eaaf-8ef5-4c61-bffe-ffcf842fbce9
 
 #### 전체 실행결과
 
-https://github.com/user-attachments/assets/b884151e-350e-457e-bfec-6dd2fa818f10
-
+https://github.com/user-attachments/assets/c1933af5-77dc-486d-9791-2414751a07de
 
 - [소스폴더](./wpf/WpfPracticeSolution/WpfCafeKiosk/)
 
@@ -626,8 +625,7 @@ CREATE TABLE sensor_data
 );
 ```
 
-### test - OpenAPI를 사용한 맛집정보제공 앱: WpfBusanFoodApp
-## 부산맛집 정보 WPF 앱
+## OpenAPI를 사용한 맛집정보제공 앱: WpfBusanFoodApp
 
 ### 개발 목적
 공공데이터포털의 부산광역시 부산맛집정보 OpenAPI를 활용하여 부산 맛집 목록과 상세 정보를 제공하는 WPF 데스크톱 앱을 구현하였다.
