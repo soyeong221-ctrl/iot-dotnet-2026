@@ -5,37 +5,40 @@ public class BoxSpawner : MonoBehaviour
     [Header("프리팹 지정")]
     public GameObject prdPrefab;
 
-    [Header("생성 간격")]
-    public float interval = 3.0f;
+    // 생성은 MQTT 시그널로 실행
+    //[Header("생성 간격")]
+    //public float interval = 3.0f;
 
-    private float timer;
-    private bool isRunning = true;
+    //private float timer;
+    //private bool isRunning = true;
 
-    void Update()
+    public void Spawn()
     {
-        if (!isRunning) return;  // isRunning이 false면 아래 로직 실행안함
+        //if (!isRunning) return;  // isRunning이 false면 아래 로직 실행안함
 
-        timer += Time.deltaTime;   // HW 성능별 FPS 고정
+        //timer += Time.deltaTime;   // HW 성능별 FPS 고정
 
-        if (timer >= interval)
-        {
-            timer = 0;
+        //if (timer >= interval)
+        //{
+            //timer = 0;
 
             // instant 예제, 샘플
             // Quaternion.identity 회전값 없는 상태
-            Instantiate(prdPrefab,
-                        transform.position,
-                        Quaternion.identity);
-        }
+        Instantiate(prdPrefab,
+                    transform.position,
+                    Quaternion.identity);
+
+        Debug.Log("Box 생성");
+        //}
     }
 
-    public void Stop()
-    {
-        isRunning = false;
-    }
+    //public void Stop()
+    //{
+    //    isRunning = false;
+    //}
 
-    public void StartSpawner()
-    {
-        isRunning = true;
-    } 
+    //public void StartSpawner()
+    //{
+    //    isRunning = true;
+    //} 
 }

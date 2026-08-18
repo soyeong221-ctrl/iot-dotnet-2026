@@ -35,18 +35,16 @@
 - **기술:** Arduino · Raspberry Pi · MQTT · Unity · Python
 - 📄 [TOYPROJECT5.md](./TOYPROJECT5.md)
 
----
-## 예정
-### IoT 스마트홈 통합 플랫폼
+### 6. IoT 스마트홈 통합 플랫폼
 
-- MQTT WPF + WebAPI + Unity 연계 
+- MQTT WPF + WebAPI + Unity 연계
 
-### Unity ProductApp 기능 개선
+### 7. Unity ProductApp 기능 개선
 
 - 각 상품 클릭시 3D 박스와 연계
 - 로봇팔 오브젝트 연계
 
-### 실시간 채팅 시스템 + 챗봇 기능
+### 8. 실시간 채팅 시스템 + 챗봇 기능
 
 - Python AI + SignalR API
 

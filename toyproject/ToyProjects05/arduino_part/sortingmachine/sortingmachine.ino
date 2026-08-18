@@ -70,13 +70,12 @@ void setup() {
 
 // 반복작업
 void loop() {
-  // analogWrite(PIN_DC_SPEED, 0);   // 나중에 주석 처리
+  analogWrite(PIN_DC_SPEED, 0);   // 나중에 주석 처리
 
   // 제품 적재여부 확인
-  if (digitalRead(PIN_IR) == HIGH) return; // loop() 함수를 빠져나가지만 아두이노가 loop() 함수를 다시 실행
+  if (digitalRead(PIN_IR) == HIGH) return; // IR센서는 물체감지 시 LOW 전달
 
   // toneDetected();                     // 물체감지 사운드    
-  Serial.print("D");                    // 물체 감지했다는 값 전달
   analogWrite(PIN_DC_SPEED, railSpeed - 20); 
   // 일정 시간 후 멈추기
   delay(600);                         // 500ms 딜레이

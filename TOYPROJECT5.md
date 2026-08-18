@@ -610,40 +610,54 @@ if (prdResult.data == "D") {
 
 - 칼라센서 결과로 유니티 박스 색상을 변경
 
-  - 유니티 에디션에서 Red, Green, Blue 머티리얼 생성
+  - 유니티 에디터에서 Red_Mat, Green_Mat, Blue_Mat 머티리얼 생성
 
   ![](assets/20260810_112633_image.png)
 
-  - SensorTrigger.cs 스크립트에 색상 변경 메서드 SetColor
+  - SensorTrigger.cs 스크립트에 색상 변경 메서드 SetColor() 추가
   - 머터리얼 연결 변수 추가
-  -
+  - 현재 객체 지정 변수 추가
 
   ```cs
+  [Header("색상 머티리얼")]
+  public Material redMaterial;  // 실제 머티리얼 객체와 연결
+  public Material greenMaterial;
+  public Material blueMaterial;
 
+  private GameObject currProduct;  // 현재 스폰되고 색상판별할 박스 지정
+
+  public void SetColor(string color) {
+    if (currProduct == null) return;  // 현재 물체가 없는데 색상 변경불가
+
+    Renderer renderer = currProduct.GetComponent<Renderer>();
+    if (color == "R") {
+        renderer.material = redMaterial;
+    } else if (color == "G") {
+        renderer.material = greenMaterial;
+    } else if (color == "B") {
+        renderer.material = blueMaterial;
+    }  
+  }
+
+  private void OnTriggerEnter(Collider other)
+  {
+      if (isProcessing) return;
+
+      if (other.CompareTag("Product"))
+      {
+        isProcessing = true;
+        currProduct = other.gameObject;  // 박스가 할당 !!
   ```
-- SmartFactoryMqttClient.cs에 색상 감지 후 SensorTrigger 색상변경 추가
 
-  ```cs
-  // 색상별로 박스 색상변경 추가
-  sensorTrigger.SetColor(prdResult.data);
+  - SmartFactoryMqttClient.cs 에 색상 감지 후 SensorTrigger 색상변경 추가
 
-  ```
+    ```cs
+    // 색상별로 박스 색상변경 추가
+    sensorTrigger.SetColor(prdResult.data);
+    ```
 
-  ![](assets/20260810_114001_image.png)
+    ![](assets/20260810_113952_image.png)
 
 #### Unity 실행결과
 
-
-#### Unity 디지털트윈 소스 오픈
-
-### ESP32-CAM 연동
-
-### Database 데이터 저장
-
-### ...
-
-### WPF 모니터링 시스템
-
-### 벨트 제어
-
-- 모니터링 시스템에서 비상정지 기능
+https://github.com/user-attachments/assets/35891752-da7d-4d22-a74a-6ab1621f018a

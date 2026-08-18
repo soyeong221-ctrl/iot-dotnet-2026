@@ -1,0 +1,9 @@
+path: C:/SourceBank/iot-dotnet-2026/toyproject/ToyProjects06/raspberrypi_part/dataset
+
+train: images/train
+val: images/val
+
+names:
+  0: red
+  1: green
+  2: blue

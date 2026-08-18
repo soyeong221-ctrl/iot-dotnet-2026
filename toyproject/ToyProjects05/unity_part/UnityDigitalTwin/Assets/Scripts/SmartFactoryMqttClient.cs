@@ -1,10 +1,10 @@
 using UnityEngine;
 using M2MqttUnity;
-using System.Collections.Generic;
 using uPLibrary.Networking.M2Mqtt.Messages;
 using System.Text;
 using Newtonsoft.Json;
 using TMPro;
+using System;
 
 // M2MqttClient를 상속한 클래스
 public class SmartFactoryMqttClient : M2MqttUnityClient
@@ -21,12 +21,23 @@ public class SmartFactoryMqttClient : M2MqttUnityClient
     [Header("ProductResult Text")]
     public TMP_Text txtData;
 
+    [Header("Box Spwaner")]
+    public BoxSpawner boxSpwaner;  // MQTT에서 확인하고 박스를 생성
+
+    [Header("Sensor Trigger")]
+    public SensorTrigger sensorTrigger;  // 센서확인 처리
+
     // 감지결과 클래스
     private ProductResult prdResult = null;
+
+    private string deviceId = string.Empty;
+    private string control_topic = string.Empty;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        deviceId = "IOT52-RPI";
+        control_topic = "smartfactory/52/control";
         autoConnect = true;
 
         base.Start(); // MqMqttUnityClient.start() 실행
@@ -83,7 +94,68 @@ public class SmartFactoryMqttClient : M2MqttUnityClient
         txtDeviceId.text = prdResult.deviceId;
         Debug.Log(prdResult.timestamp);
         txtTimestamp.text = prdResult.timestamp;
+
         Debug.Log(prdResult.data);
-        txtData.text = prdResult.data;        
+        var resultText = "";
+        switch (prdResult.data) {
+            case "R":
+                resultText = "Red Product";
+                break;
+            case "G":
+                resultText = "Green Product";
+                break;
+            case "B":
+                resultText = "Blue Product";
+                break;
+            case "D":
+                resultText = "Product detected";
+                break;
+            default:
+                resultText = "None";
+                break;
+        }
+        txtData.text = resultText;
+
+        if (prdResult.data == "D") {
+            boxSpwaner.Spawn();
+        } else if (prdResult.data == "R" ||
+                   prdResult.data == "G" ||
+                   prdResult.data == "B") {
+            // 색상별로 박스 색상변경 추가
+            sensorTrigger.SetColor(prdResult.data);
+            sensorTrigger.Resume();
+        }
+    }
+
+    public void Stop() {
+        Debug.Log("비상정지!");
+
+        var currDateTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.ffffff");
+        // D, R, G, B, T(STOP), S(RESTART)
+        string payload = $@"
+               {{
+                    ""deviceId"": ""{deviceId}"",
+                    ""timestamp"": ""{currDateTime}"",
+                    ""control"": ""T""
+               }}
+            ";
+
+        client.Publish(control_topic, Encoding.UTF8.GetBytes(payload), MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, false);
+    }
+
+    public void Restart() {
+        Debug.Log("재가동!!");
+
+        var currDateTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.ffffff");
+        // D, R, G, B, T(STOP), S(RESTART)
+        string payload = $@"
+               {{
+                    ""deviceId"": ""{deviceId}"",
+                    ""timestamp"": ""{currDateTime}"",
+                    ""control"": ""S""
+               }}
+            ";
+
+        client.Publish(control_topic, Encoding.UTF8.GetBytes(payload), MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, false);
     }
 }
