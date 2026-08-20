@@ -48,6 +48,10 @@
 
 - Python AI + SignalR API
 
+### 9. AI 어쩌구
+- 📄 [TOYPROJECT7.md](./TOYPROJECT7.md)
+
+
 
 ### (번외) 네트워크 연결 설정
 
