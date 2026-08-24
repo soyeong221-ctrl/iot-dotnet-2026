@@ -7,7 +7,7 @@
 ![alt text](image-430.png)
 
 기업 문서를 기반으로 한 AI 지식검색 시스템 개발
-- 사내 PDF 문서 등록해 두고, 사용자가 저언어로 질문을 하면 관련 문서를 찾아서 근거와 함께 답변을 해주는 WPF 윈앱 프로그램을 구현
+- 사내 PDF 문서를 등록해 두고, 사용자가 자연어로 질문을 하면 관련 문서를 찾아서 근거와 함께 답변을 해주는 WPF 윈앱 프로그램을 구현
 
 사용 기술
 |구분|기술|
@@ -27,11 +27,11 @@ Retrieval Augmented Generation: 검색(Retrieval) + AI 답변생성(Generation)
 
 ### 프로젝트 구성
 ```plaintext
-ToyProject07(AIKnowledgeSystem)
+ToyProjects07(AIKnowledgeSystem)
 │
 ├─ Client(WPFClient) - 사용자 화면
 │
-├─ Server(AIServer) - FastAPI + Python Functioins
+└─ Server(AIServer) - FastAPI + Python Functions
 ```
 
 ### 클라이언트 구현
@@ -47,6 +47,8 @@ WPF 애플리케이션 프로젝트 생성 - .NET 10.0 (LTS) 선택
 
 ##### 서버로 데이터 전송
 
+![alt text](image-449.png)
+
 ##### 문서 등록 버튼 추가
 
 ![alt text](image-434.png)
@@ -55,9 +57,11 @@ WPF 애플리케이션 프로젝트 생성 - .NET 10.0 (LTS) 선택
 
 ![alt text](image-436.png)
 - 파일명에 공백이 있으면 업로드 실패
+- 한글파일 인코딩 문제
+  - `[국가교통정보센터] Open_API_매뉴얼.pdf` 파일 업로드 시
+  - 파일명이 `=?utf-8?B?W+q1reqwgOq1kO2GteygleuztOyEvO2EsF0gT3Blbl9BUElf66ek64m07Ja8LnBkZg==?=` 형태로 변경
+  - 영문 파일명은 문제없음
 - 동일명의 파일이 올라가면 이전 파일 삭제, 새로 업로드
-
-
 
 #### 서버 구현
 
@@ -81,7 +85,7 @@ def index():
         'message': 'AI Knowledge Server'
     }
 
-@app.get('health')
+@app.get('/health')
 def health():
     return {
         'status': 'OK'
@@ -204,7 +208,7 @@ def extract_pdf_text(pdf_path:Path):
 
 ```python
 ## 내부 함수 5 - Chunk 분리 함수
-def split_into_chunck(pages, chunk_size=50, overlap=10):
+def split_into_chunk(pages, chunk_size=50, overlap=10):
     chunks = []
     for page in pages:
         text = page['text']
@@ -236,7 +240,7 @@ def split_into_chunck(pages, chunk_size=50, overlap=10):
 - Chunk 문장을 숫자 배열로 바꾸는 작업. 숫자 벡터로 추후 질문과 문서 Chunk 간의 의미가 얼마나 비슷한지 비교
 - Sentence Transformers 패키지 설치
     - 텍스트를 고정 길이 벡터로 변환하는 라이브러리
-    - 트랜스포머: 자연어 처리시 기존 문제를 해결한 새 매커니즘. BERT, GPT
+    - 트랜스포머: 자연어 처리시 기존 문제를 해결한 새 메커니즘. BERT, GPT
     - Transformer 신경망 사용해서 문장의 의미를 숫자 벡터로 표현하는 모델
 
 ```powershell
@@ -267,10 +271,208 @@ def create_embedding(chunks):
 ```
 
 - 업로드 후 PDF 변환, Chunk 작업 후 Embedding
-- 최초 트랜스포머 모델 다운로드
+- 트랜스포머 모델 다운로드 경로 : `C:\Users\User\.cache\huggingface\hub\`
+- 최초 트랜스포머 모델 다운로드 시 시간이 소요됨
 
 ![alt text](image-440.png)
 
 - Embedding 변환결과
 
 ![alt text](image-441.png)
+
+##### ChromaDB에 Embedding 저장
+- ChromaDB: 벡터 데이터베이스. RAG에서 관련자료 찾아주는 검색엔진 역할의 DB
+- SQLite 베이스
+
+```powershell
+> pip install chromadb
+```
+
+- ChromaDB 저장 함수
+
+```python
+def save_chunk_to_chroma(chunks, embeddings, filename):
+    ids = []
+    documents = []
+    metadatas = []
+    embedding_list = []
+
+    for i, chunk in enumerate(chunks):
+        ids.append(
+            f'{filename}_{chunk["page"]}_{chunk["chunk_index"]}'
+        )
+
+        documents.append(chunk['text'])
+
+        metadatas.append({
+            'filename': filename,
+            'page': chunk['page'],
+            'chunk_index': chunk['chunk_index']
+        })
+
+        embedding_list.append(embeddings[i].tolist())
+
+    collection.add(
+        ids=ids,
+        documents=documents,
+        metadatas=metadatas,
+        embeddings=embedding_list
+    )
+```
+
+- 서버 실행 후 DB 생성
+
+![alt text](image-442.png)
+
+- PDF 업로드 후 DB 현황. 벡터 검색용 테이블들이 구성되어 있음
+
+![alt text](image-443.png)
+
+- ChromaDB는 기본 SQLite. 실무에서 사용할 DB로는 `PostgreSQL`로 변경
+
+##### 벡터 검색으로 관련 Chunk 찾기
+
+- 검색 함수
+
+```python
+### 내부 함수 8 - Chunk 검색함수
+### top_k : 관련있는 값을 몇개까지 가져올것인지
+def search_documents(question: str, top_k=3):
+    # 질문을 Embegging으로 변환
+    question_embedding = embedding_model.encode(
+        question,
+        convert_to_numpy=True        
+    )
+
+    # ChromaDB 검색
+    results = collection.query(
+        query_embeddings=[
+            question_embedding.tolist()
+        ],
+        n_results=top_k
+    )
+
+    return results
+```
+
+- `/ask` post 함수 수정
+
+```python
+@app.post('/ask')
+def ask(request: QuestionRequest):
+    # DB에서 관련어 검색하고
+    results = search_documents(        
+        request.question
+    )
+
+    # 결과 리턴
+    return {
+        'question': request.question,
+        'documents': results['documents'][0],
+        'metadatas': results['metadatas'][0],
+        'distances': results['distances'][0]
+    }
+```
+
+- 결과 화면
+
+![alt text](image-444.png)
+
+- 텍스트 대신 이미지를 PDF로 변환한 파일인 경우 - 변환불가. OCR 등을 사용해서 텍스트 추출
+
+![alt text](image-445.png)
+
+##### Ollama LLM 연결
+- https://ollama.com/ 설치
+- Ollama 동작
+
+```powershell
+> ollama list
+> ollama run qwen3.5:2b
+```
+
+- Ollama 패키지 설치
+
+```powershell
+> pip install ollama
+```
+
+- Ollama 답변 함수
+
+```python
+import ollama
+
+### 내부 함수 9 - Ollama 프롬프트생성 함수
+def generate_answer(question: str, documents: list):
+    context = "\n\n".join(documents)
+
+    prompt = f"""
+다음 문서 내용을 참조해서 질문에 답변하세요.
+문서에 없는 내용은 추측하지 말고 모른다고 답변하세요.
+
+[문서]
+{context}
+
+[질문]
+{question}
+
+[답변]
+    """
+
+    response = ollama.chat(
+        model='qwen3.5:2b',
+        messages=[
+            {
+                'role': 'user',
+                'content': prompt
+            }
+        ]
+    )
+
+    return response['message']['content']
+```
+
+- /ask post 함수 수정
+
+```python
+@app.post('/ask')
+def ask(request: QuestionRequest):
+    # DB에서 관련어 검색하고
+    results = search_documents(        
+        request.question,
+        top_k=3
+    )
+
+    documents = results['documents'][0]
+    metadatas = results['metadatas'][0]
+    distances = results['distances'][0]
+
+    # 검색된 결과를 Ollama(LLM)에 전달
+    answer = generate_answer(request.question, documents)
+
+    # 결과 반환
+    return {
+        'question': request.question,
+        'answer': answer,
+        'sources': metadatas,
+        'distances': distances
+    }
+```
+
+- Ollama 사용 결과 화면 
+
+![alt text](image-447.png)
+
+- Ollama, Local LLM에 질문을 보내고 응답받는 시간이 오래 걸림. 최소 20초
+- OpenAI나 Gemini 등의 상용 LLM을 사용하면 사라질 현상
+
+- ChatGPT(OpenAI)로 변경했을 때 결과 화면 - 같은 벡터 검색결과로 LLM 실행결과가 다르게 나옴. 결과 도출시간 5초 정도
+
+![alt text](image-448.png)
+
+#### 추가 작업
+- 질문 작업 엔터로 처리
+- 질문 진행동안 버튼 비활성화
+- 프로그레스바(서클) LLM 처리 시간동안 진행상태 표시
+- WPF JSON 파싱
+- 예외처리(서버 꺼짐, WPF 앱 꺼짐)
