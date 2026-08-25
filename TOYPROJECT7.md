@@ -63,7 +63,15 @@ WPF 애플리케이션 프로젝트 생성 - .NET 10.0 (LTS) 선택
   - 영문 파일명은 문제없음
 - 동일명의 파일이 올라가면 이전 파일 삭제, 새로 업로드
 
-#### 서버 구현
+##### 추가 작업 1
+- 질문 텍스트박스에서 엔터시 버튼 클릭 이벤트 발생 시키기
+- 질문하기 완료 전까지 버튼 비활성화
+
+##### 추가 작업 2 - WPF JSON 파싱처리
+
+![alt text](image-450.png)
+
+#### 서버(Python) 구현
 
 ##### 필요 패키지 설치
 
@@ -465,14 +473,59 @@ def ask(request: QuestionRequest):
 
 - Ollama, Local LLM에 질문을 보내고 응답받는 시간이 오래 걸림. 최소 20초
 - OpenAI나 Gemini 등의 상용 LLM을 사용하면 사라질 현상
+- setx로 등록 시, OPENAI_API_KEY 또는 OPENAI_ADMIN_KEY
+    - `setx OPENAI_API_KEY "발급 받은_Key"`
 
 - ChatGPT(OpenAI)로 변경했을 때 결과 화면 - 같은 벡터 검색결과로 LLM 실행결과가 다르게 나옴. 결과 도출시간 5초 정도
 
 ![alt text](image-448.png)
 
 #### 추가 작업
-- 질문 작업 엔터로 처리
-- 질문 진행동안 버튼 비활성화
 - 프로그레스바(서클) LLM 처리 시간동안 진행상태 표시
-- WPF JSON 파싱
 - 예외처리(서버 꺼짐, WPF 앱 꺼짐)
+- UI 스타일 변경(MahApps. UI Framework 등...)
+
+##### DevExpress 적용
+- 첫번째: 확장 > DevExpress > Project Converter로 일괄 변경
+- 두번째: 일반적인 NuGet 패키지 관리자로 설치
+    - DevExpress.Wpf.Core 설치. 12개 종속성 패키지 통합 설치
+    - DevExpress.Wpf.Control 설치
+    - DevExpress.Wpf.Grid 설치
+- WPF 디자이너 도구상자 확인
+
+![alt text](image-451.png)
+
+##### DevExpress 윈도우로 변경
+- 아래와 같이 Xaml 디자이너에서 윈도우 클래스 ThemedWindow로 변경
+
+```cs
+<dx:ThemedWindow    -- 클래스 확인
+        x:Class="AiKnowledgeApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"  -- 확인
+        xmlns:local="clr-namespace:AiKnowledgeApp"
+```
+
+- 코드비하인드 변경해서 오류 제거
+
+```cs
+using Microsoft.Win32  // 삭제
+
+if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+...
+MessageBox.Show("질문을 입력하세요."); --> DXMessageBox.Show("질문을 입력하세요.");
+```
+
+- App.xaml 코드비하인드의 부모클래스 Application을 변경
+
+```cs
+public partial class App: System.Windows.Application {
+```
+
+- 주요 컨트롤
+    - xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" : SimpleButton, ..
+    - xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" : TextEdit, ..
+- GridControl 사용시 주의점: 상위 Grid RowDefinition이 Auto일 때 Height 속성 필수.

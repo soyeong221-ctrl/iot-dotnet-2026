@@ -1,18 +1,15 @@
-﻿using AIKnowledgeApp;
-using DevExpress.CodeParser.Diagnostics;
-using DevExpress.Xpf.Core;
-using DevExpress.Xpf.LayoutControl;
-using System.IO;
-using System.Net.Http;
+﻿using Microsoft.Win32;
 using System.Text;
-using System.Text.Json;
 using System.Windows;
+using System.Text.Json;
+using System.Net.Http;
+using System.IO;
 
-namespace AiKnowledgeApp {
+namespace AIKnowledgeApp {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : ThemedWindow {
+    public partial class MainWindow : Window {
         // HTTP로 데이터 수전송 클라이언트 객체
         private readonly HttpClient client = new HttpClient();
 
@@ -20,15 +17,15 @@ namespace AiKnowledgeApp {
             InitializeComponent();
         }
 
-        // ##### 파일선택 구현 
+        // ##### 파일 선택 구현
         private void BtnSelPdf_Click(object sender, RoutedEventArgs e) {
             // OpenFileDialog 추가
             OpenFileDialog dialog = new OpenFileDialog();
             // 필터 PDF만 선택
             dialog.Filter = "PDF 파일 (*.pdf)|*.pdf";
-            dialog.Multiselect = false;   // 파일 하나만
+            dialog.Multiselect = false; // 파일 하나만
 
-            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+            if (dialog.ShowDialog() == true) {
                 TxtPdfPath.Text = dialog.FileName;
             }
         }
@@ -38,9 +35,11 @@ namespace AiKnowledgeApp {
             string question = TxtQuestion.Text;
 
             if (string.IsNullOrWhiteSpace(question)) {
-                DXMessageBox.Show("질문을 입력하세요.");
+                MessageBox.Show("질문을 입력하세요.");
                 return;
             }
+
+            BtnQuestion.IsEnabled = false; // 버튼 비활성화
 
             var data = new {
                 question = question
@@ -55,16 +54,15 @@ namespace AiKnowledgeApp {
                 );
 
             try {
-                BtnQuestion.IsEnabled = false; // 버튼 비활성화
 
-                TxtAnswer.Text = "AI가 답변을 생성하고 있습니다..." + Environment.NewLine;
-                GrdSources.ItemsSource = null;  // 초기화
+                TxtAnswer.Text = "AI가 답변을 생성하고 있습니다...";
+                TxtSources.Text = "";
 
                 // FastAPI 서버로 전송 후 결과 전달
                 HttpResponseMessage response = await client.PostAsync("http://127.0.0.1:8000/ask", content);
 
                 if (!response.IsSuccessStatusCode) {
-                    TxtAnswer.Text += $"서버 오류 : {response.StatusCode}" + Environment.NewLine;  // 403, 500 오류
+                    TxtAnswer.Text = $"서버 오류: {response.StatusCode}";  // 403, 500 오류
                     return;
                 }
 
@@ -73,47 +71,39 @@ namespace AiKnowledgeApp {
                 AskResponse askResponse = JsonSerializer.Deserialize<AskResponse>(result);
 
                 if (askResponse == null) {
-                    TxtAnswer.Text += "응답을 처리할 수 없습니다." + Environment.NewLine;
+                    TxtAnswer.Text += "응답을 처리할 수 없습니다.";
                     return;
                 }
 
-                TxtAnswer.Text += askResponse.answer + Environment.NewLine;
-                // 참고문서 
-                var sourceList = new List<SourceInfo>();
-
+                TxtAnswer.Text += result + Environment.NewLine;
+                // 참고문서
+                StringBuilder sb = new StringBuilder();
                 if (askResponse.sources != null) {
-                    for (int i = 0; i < askResponse.sources.Count; i++) {
-                        var source = askResponse.sources[i];
-
-                        // 동일 소스 파악해서 중복제거
-                        bool isExists = sourceList.Any(x => x.filename == source.filename &&
-                                                             x.page == source.page);
-
-                        if (!isExists) {
-                            sourceList.Add(source);
-                        }
+                    foreach (var source in askResponse.sources) {
+                        sb.AppendLine($"{source.filename} / {source.page}페이지");
                     }
                 }
 
-                GrdSources.ItemsSource = sourceList;
+                TxtSources.Text += sb.ToString();
+
 
             } catch (HttpRequestException) {
                 TxtAnswer.Text = "FastAPI 서버에 연결할 수 없습니다.";
-            } catch (Exception ex) {
-                TxtAnswer.Text = $"오류가 발생했습니다.\n{ex.Message}";
+            } 
+            catch (Exception ex) {
+                TxtAnswer.Text = $"오류가 발생했습니다. \n{ex.Message}";
             } finally {
                 BtnQuestion.IsEnabled = true; // 버튼 재활성화
             }
-
         }
 
         // ##### PDF 전송 기능
         private async void BtnUpload_Click(object sender, RoutedEventArgs e) {
-            // MessageBox.Show("문서등록 준비 중");
+            // MessageBox.Show("문서 등록 준비 중");
             string filePath = TxtPdfPath.Text;
 
             if (string.IsNullOrWhiteSpace(filePath)) {
-                DXMessageBox.Show("PDF 파일을 먼저 선택하세요.");
+                MessageBox.Show("PDF 파일을 먼저 선택하세요.");
                 return;
             }
 
@@ -127,7 +117,7 @@ namespace AiKnowledgeApp {
 
             string result = await response.Content.ReadAsStringAsync();
 
-            DXMessageBox.Show(result);
+            MessageBox.Show(result);
         }
 
         private void TxtQuestion_KeyDown(object sender, System.Windows.Input.KeyEventArgs e) {

@@ -12,9 +12,9 @@ import uvicorn
 import pymupdf
 import chromadb
 import ollama
-from openai import OpenAI
+# from openai import OpenAI
 
-openai_client = OpenAI()
+# openai_client = OpenAI()
 
 app = FastAPI()
 
@@ -205,22 +205,17 @@ def generate_answer(question: str, documents: list):
 [답변]
     """
 
-    # response = ollama.chat(
-    #     model='qwen3.5:2b',
-    #     messages=[
-    #         {
-    #             'role': 'user',
-    #             'content': prompt
-    #         }
-    #     ]
-    # )
-    # return response['message']['content']
-    response = openai_client.responses.create(
-        model='gpt-5-mini',
-        input=prompt
+    response = ollama.chat(
+        model='qwen3.5:2b',
+        messages=[
+            {
+                'role': 'user',
+                'content': prompt
+            }
+        ]
     )
 
-    return response.output_text
+    return response['message']['content']
 
 
 ### HTTP 메서드 함수

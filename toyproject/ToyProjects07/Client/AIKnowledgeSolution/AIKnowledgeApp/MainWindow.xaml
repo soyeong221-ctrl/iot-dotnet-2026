@@ -1,11 +1,14 @@
-﻿<Window x:Class="AIKnowledgeApp.MainWindow"
+﻿<dx:ThemedWindow x:Class="AiKnowledgeApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:AIKnowledgeApp"
+        xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+        xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+        xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid"
+        xmlns:local="clr-namespace:AiKnowledgeApp"
         mc:Ignorable="d" Topmost="True"
-        Title="MainWindow" Height="650" Width="900">
+        Title="AI Knowledge Search App v1.0" Height="650" Width="900">
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -15,10 +18,10 @@
         </Grid.RowDefinitions>
 
         <!-- 타이틀 -->
-        <TextBlock Grid.Row="0" 
+        <TextBlock Grid.Row="0"
                    Text="AI 문서 지식검색 시스템"
-                   FontSize="25" FontWeight="Bold" 
-                   Margin="0,0,0,20" FontFamily="Noto Sans KR Medium"/>
+                   FontSize="25" FontWeight="Bold"
+                   Margin="0,0,0,20"/>
 
         <!-- PDF 선택 및 등록 -->
         <Grid Grid.Row="1" Margin="0,0,0,10">
@@ -28,31 +31,64 @@
                 <ColumnDefinition Width="110" />
             </Grid.ColumnDefinitions>
 
-            <TextBox x:Name="TxtPdfPath" Grid.Column="0" Height="38" VerticalContentAlignment="Center"
-                     IsReadOnly="True" Margin="0,0,10,0" FontFamily="Noto Sans KR Medium" />
-            <Button x:Name="BtnSelPdf" Grid.Column="1" Content="PDF 선택" Height="38" Margin="0,0,10,0" Click="BtnSelPdf_Click" />
-            <Button x:Name="BtnUpload" Grid.Column="2" Content="문서 등록" Height="38" Click="BtnUpload_Click" />
+            <dxe:TextEdit x:Name="TxtPdfPath" Grid.Column="0" Height="38" 
+                     VerticalContentAlignment="Center"
+                     IsReadOnly="True" Margin="0,0,10,0" FontFamily="Consolas"
+                     NullText="업로드할 파일을 선택하세요..."/>
+            <dx:SimpleButton x:Name="BtnSelPdf" Grid.Column="1" Content="PDF 선택" Height="38" 
+                    Margin="0,0,10,0" Click="BtnSelPdf_Click" />
+            <dx:SimpleButton x:Name="BtnUpload" Grid.Column="2" Content="문서 등록" Height="38" 
+                    Click="BtnUpload_Click" />
         </Grid>
 
-        <!-- 질문 영역 -->
+        <!-- 질문영역 -->
         <Grid Grid.Row="2" Margin="0,0,0,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="120" />
             </Grid.ColumnDefinitions>
 
-            <TextBox x:Name="TxtQuestion" Grid.Column="0" Height="45" VerticalContentAlignment="Center"
-                     Margin="0,0,10,0" FontFamily="Noto Sans KR Medium" />
-            <Button x:Name="BtnQuestion" Grid.Column="1" Content="질문하기" Height="45" Click="BtnQuestion_Click" />
+            <dxe:TextEdit 
+                x:Name="TxtQuestion" Grid.Column="0" Height="45" 
+                VerticalContentAlignment="Center"
+                Margin="0,0,10,0" KeyDown="TxtQuestion_KeyDown" 
+                NullText="질문을 입력하세요..."/>
+            <dx:SimpleButton x:Name="BtnQuestion" Grid.Column="1" Content="질문하기" Height="45" Click="BtnQuestion_Click" />
         </Grid>
 
-        <!-- AI 답변 영역 -->
-        <GroupBox Grid.Row="3" Header="AI 답변" FontSize="16">
-            <TextBox x:Name="TxtAnser"
-                     Margin="10" FontSize="14" TextWrapping="Wrap"
-                     AcceptsReturn="True" 
-                     VerticalScrollBarVisibility="Auto"
-                     IsReadOnly="True"/>
-        </GroupBox>
+        <!-- AI 답변영역 -->
+        <Grid Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <GroupBox Grid.Row="0" Header="AI 답변" FontSize="16">
+                <dxe:TextEdit x:Name="TxtAnswer"    
+                         Margin="5" FontSize="14" TextWrapping="Wrap"
+                         AcceptsReturn="True"
+                         VerticalScrollBarVisibility="Auto"
+                         HorizontalScrollBarVisibility="Disabled"
+                         IsReadOnly="True" />
+            </GroupBox>
+
+            <GroupBox Grid.Row="1" Header="참고 문서" FontSize="14">
+                <!--TextBlock x:Name="TxtSources" Margin="10" TextWrapping="Wrap" /-->
+                <dxg:GridControl x:Name="GrdSources" Margin="5" AutoGenerateColumns="None"
+                                 Height="100">
+                    <dxg:GridControl.Columns>
+                        <dxg:GridColumn FieldName="filename" Header="파일명" Width="*" />
+                        <dxg:GridColumn FieldName="page" Header="페이지" Width="100" />
+                    </dxg:GridControl.Columns>
+                    <dxg:GridControl.View>
+                        <dxg:TableView ShowGroupPanel="False" 
+                                       AllowEditing="False"
+                                       ShowIndicator="False"
+                                       NavigationStyle="Row"/>
+                    </dxg:GridControl.View>
+                </dxg:GridControl>
+            </GroupBox>
+        </Grid>
+
     </Grid>
-</Window>
+</dx:ThemedWindow>

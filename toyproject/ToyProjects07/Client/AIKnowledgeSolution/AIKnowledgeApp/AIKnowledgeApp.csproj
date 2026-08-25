@@ -8,4 +8,18 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="ai-assistant.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DevExpress.Wpf.Controls" Version="26.1.4" />
+    <PackageReference Include="DevExpress.Wpf.Core" Version="26.1.4" />
+    <PackageReference Include="DevExpress.Wpf.Grid" Version="26.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="ai-assistant.ico" />
+  </ItemGroup>
+
 </Project>

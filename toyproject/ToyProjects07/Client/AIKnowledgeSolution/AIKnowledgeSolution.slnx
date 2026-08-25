@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="AIKnowledgeApp/AIKnowledgeApp.csproj" />
+  <Project Path="AIKnowledgeApp_Bak/AIKnowledgeApp_Bak.csproj" />
 </Solution>
