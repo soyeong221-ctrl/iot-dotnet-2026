@@ -15,10 +15,10 @@
 |화면|C# WPF|
 |서버|Python FastAPI|
 |PDF 처리|Python|
-|벡터 DB|?|
+|벡터 DB|ChromaDB|
 |AI 모델|Ollama 또는 OpenAI|
 |통신|REST API / JSON|
-|DB 저장|?|
+|DB 저장|-|
 
 #### RAG
 Retrieval Augmented Generation: 검색(Retrieval) + AI 답변생성(Generation)
@@ -35,11 +35,16 @@ ToyProjects07(AIKnowledgeSystem)
 ```
 
 ### 클라이언트 구현
+
+- [화면 소스 - MainWindow.xaml](./toyproject/ToyProjects07/Client/AIKnowledgeSolution/AIKnowledgeApp/MainWindow.xaml)
+- [기능 소스 - MainWindow.xaml.cs](./toyproject//ToyProjects07/Client/AIKnowledgeSolution/AIKnowledgeApp/MainWindow.xaml.cs)
+
 #### Visual Studio WPF 프로젝트 생성
 
 WPF 애플리케이션 프로젝트 생성 - .NET 10.0 (LTS) 선택
 
 ##### MainWindow.xaml 디자인
+
 ![alt text](image-431.png)
 
 ##### 파일 선택 구현
@@ -72,6 +77,7 @@ WPF 애플리케이션 프로젝트 생성 - .NET 10.0 (LTS) 선택
 ![alt text](image-450.png)
 
 #### 서버(Python) 구현
+- [서버 소스 - main.py](./toyproject/ToyProjects07/Server/main.py)
 
 ##### 필요 패키지 설치
 
@@ -485,7 +491,23 @@ def ask(request: QuestionRequest):
 - 예외처리(서버 꺼짐, WPF 앱 꺼짐)
 - UI 스타일 변경(MahApps. UI Framework 등...)
 
+#### 문제점 - 추후 개선사항
+- 중복등록 방지
+    - 같은 문서를 여러 번 업로드 후 문맥 내용이 제대로 검색 안 되는 현상
+    - Chunk와 Embedding을 ChromaDB에 중복 저장되기 때문
+    - 회사규칙.pdf 3번 업로드. 회사규칙.pdf, 회사규칙_1.pdf, 회사규칙_2.pdf, ...
+    - 같은 회사 규칙이 다른 filename, 다른 id로 여러 개 저장. top_k 검색에서 밀려날 수 있음
+    - RAG 품질에 저하
+    - 파일 내용을 `SHA-256 해시`로 검사 후 등록 방지
+
+- Embedding 성능 개선
+- Local LLM(Ollama)에서 속도 개선 방법
+- 이미지 변환된 PDF를 OCR로 텍스트 인식
+
 ##### DevExpress 적용
+- WPF 앱을 윈폼 앱처럼 UI 화면을 구성하기 위해서 사용하는 UI 컴포넌트
+- https://www.devexpress.com/ 에서 Trial 설치
+
 - 첫번째: 확장 > DevExpress > Project Converter로 일괄 변경
 - 두번째: 일반적인 NuGet 패키지 관리자로 설치
     - DevExpress.Wpf.Core 설치. 12개 종속성 패키지 통합 설치
@@ -529,3 +551,28 @@ public partial class App: System.Windows.Application {
     - xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core" : SimpleButton, ..
     - xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors" : TextEdit, ..
 - GridControl 사용시 주의점: 상위 Grid RowDefinition이 Auto일 때 Height 속성 필수.
+
+- 실행 화면
+
+![alt text](image-452.png)
+
+- 실행 결과
+
+
+
+#### 추가 작업
+##### 검색 중 진행 상태 표시
+- DevExpress ProgressBarEdit 사용
+
+```xml
+<dxe:ProgressBarEdit Grid.Row="0" x:Name="PrgAnswer"
+                     Height="20"
+                     Minimum="0" Maximum="100"
+                     Visibility="Collapsed" >
+    <dxe:ProgressBarEdit.StyleSettings>
+        <dxe:ProgressBarMarqueeStyleSettings />
+    </dxe:ProgressBarEdit.StyleSettings>
+</dxe:ProgressBarEdit>
+```
+
+- 실행 결과

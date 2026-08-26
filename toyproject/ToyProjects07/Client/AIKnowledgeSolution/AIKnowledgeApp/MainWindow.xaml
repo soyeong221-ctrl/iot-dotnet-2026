@@ -64,12 +64,30 @@
             </Grid.RowDefinitions>
 
             <GroupBox Grid.Row="0" Header="AI 답변" FontSize="16">
-                <dxe:TextEdit x:Name="TxtAnswer"    
-                         Margin="5" FontSize="14" TextWrapping="Wrap"
-                         AcceptsReturn="True"
-                         VerticalScrollBarVisibility="Auto"
-                         HorizontalScrollBarVisibility="Disabled"
-                         IsReadOnly="True" />
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <dxe:ProgressBarEdit Grid.Row="0" x:Name="PrgAnswer"
+                                         Height="20" Margin="5,0"
+                                         Minimum="0" Maximum="100"
+                                         Visibility="Collapsed" >
+                        <dxe:ProgressBarEdit.StyleSettings>
+                            <dxe:ProgressBarMarqueeStyleSettings />
+                        </dxe:ProgressBarEdit.StyleSettings>
+                    </dxe:ProgressBarEdit>
+
+                    <dxe:TextEdit x:Name="TxtAnswer"
+                                 Grid.Row="1"
+                                 Margin="5" FontSize="14" TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 VerticalScrollBarVisibility="Auto"
+                                 HorizontalScrollBarVisibility="Disabled"
+                                 IsReadOnly="True" />
+                </Grid>
+
             </GroupBox>
 
             <GroupBox Grid.Row="1" Header="참고 문서" FontSize="14">
