@@ -559,8 +559,8 @@ public partial class App: System.Windows.Application {
 - 실행 결과
 
 
-
 #### 추가 작업
+
 ##### 검색 중 진행 상태 표시
 - DevExpress ProgressBarEdit 사용
 
@@ -574,5 +574,66 @@ public partial class App: System.Windows.Application {
     </dxe:ProgressBarEdit.StyleSettings>
 </dxe:ProgressBarEdit>
 ```
+
+- 실행 결과
+
+#### 추가 수정사항
+
+##### Local LLM 응답 속도 개선
+
+* Ollama Local LLM 사용 시 질문에 따라 답변 생성 시간이 길어지는 현상 확인
+* 처리 구간별 실행 시간을 측정하여 병목 구간 확인
+
+  * 벡터 검색 시간
+  * 검색된 Chunk 수
+  * LLM에 전달되는 글자 수
+  * Ollama 답변 생성 시간
+  * 전체 처리 시간
+* 측정 결과 벡터 검색은 약 `0.25초`, Ollama 답변 생성은 약 `16.91초`가 소요되어 LLM 답변 생성 과정이 주요 병목임을 확인
+* 검색 결과 수를 `top_k=5`에서 `top_k=3`으로 조정하여 LLM에 전달되는 문맥 크기 축소
+* RAG 문서 검색 목적에 맞게 Ollama 답변 생성 옵션 최적화
+
+  * `think=False` : 별도의 추론 과정 비활성화
+  * `num_predict=100` : 최대 답변 생성 길이 제한
+  * `temperature=0.2` : 문서 내용을 기반으로 일관된 답변을 생성하도록 설정
+  * `keep_alive='10m'` : 모델을 일정 시간 메모리에 유지하여 반복 질문 시 로딩 시간 감소
+* 프롬프트에 `답변은 핵심 내용만 2~3문장으로 간결하게 작성하세요.` 조건 추가
+* 최적화 후 동일한 문서 질의에서 답변 생성 시간이 약 `0.74초`까지 단축됨
+
+```python
+response = ollama.chat(
+    model='qwen3.5:2b',
+    messages=[
+        {
+            'role': 'user',
+            'content': prompt
+        }
+    ],
+    think=False,
+    options={
+        'num_predict': 100,
+        'temperature': 0.2
+    },
+    keep_alive='10m'
+)
+```
+
+##### 답변 표시 방식 개선
+
+* 질문 처리 중에는 `AI가 답변을 생성하고 있습니다...` 안내 문구 표시
+* 기존에는 AI 답변을 안내 문구 뒤에 추가하여 답변 완료 후에도 안내 문구가 남는 문제 발생
+* 응답 완료 시 `TxtAnswer`의 내용을 AI 답변으로 교체하도록 수정
+
+```csharp
+// 수정 전
+TxtAnswer.Text += askResponse.answer + Environment.NewLine;
+
+// 수정 후
+TxtAnswer.Text = askResponse.answer;
+```
+
+* 답변 생성 중에는 진행 상태를 표시하고, 응답 완료 후에는 실제 AI 답변만 화면에 출력되도록 개선
+
+![alt text](image-453.png)
 
 - 실행 결과

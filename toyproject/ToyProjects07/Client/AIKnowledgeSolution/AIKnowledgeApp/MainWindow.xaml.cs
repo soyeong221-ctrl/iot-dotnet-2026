@@ -78,7 +78,7 @@ namespace AiKnowledgeApp {
                     return;
                 }
 
-                TxtAnswer.Text += askResponse.answer + Environment.NewLine;
+                TxtAnswer.Text = askResponse.answer;
                 // 참고문서 
                 var sourceList = new List<SourceInfo>();
 
