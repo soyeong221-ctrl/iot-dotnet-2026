@@ -492,18 +492,22 @@ def ask(request: QuestionRequest):
 - UI 스타일 변경(MahApps. UI Framework 등...)
 
 #### 문제점 - 추후 개선사항
-- 중복등록 방지
-    - 같은 문서를 여러 번 업로드 후 문맥 내용이 제대로 검색 안 되는 현상
-    - Chunk와 Embedding을 ChromaDB에 중복 저장되기 때문
-    - 회사규칙.pdf 3번 업로드. 회사규칙.pdf, 회사규칙_1.pdf, 회사규칙_2.pdf, ...
-    - 같은 회사 규칙이 다른 filename, 다른 id로 여러 개 저장. top_k 검색에서 밀려날 수 있음
-    - RAG 품질에 저하
-    - 파일 내용을 `SHA-256 해시`로 검사 후 등록 방지
 
-- Embedding 성능 개선
-- Local LLM(Ollama)에서 속도 개선 방법
-- 이미지 변환된 PDF를 OCR로 텍스트 인식
+- 중복 등록 방지
+    - 같은 문서를 여러 번 업로드하면 Chunk와 Embedding이 ChromaDB에 중복 저장되는 문제
+    - 동일 문서가 서로 다른 filename과 id로 저장되어 `top_k` 검색 결과에서 관련 문서가 밀려날 수 있음
+    - 중복 데이터로 인해 RAG 검색 품질이 저하될 수 있음
+    - 추후 파일 내용을 `SHA-256 해시`로 비교하여 동일 문서의 중복 등록 방지 예정
 
+- Embedding 및 검색 성능 개선
+    - 현재 고정된 Chunk 크기와 Embedding 모델을 사용
+    - 추후 Chunk 크기 및 overlap 조정, Embedding 모델 비교를 통해 검색 정확도 개선
+
+- 이미지 기반 PDF 지원
+    - 현재 PyMuPDF를 이용한 텍스트 기반 PDF만 처리 가능
+    - 스캔 문서 등 이미지로 구성된 PDF는 텍스트 추출이 어려움
+    - 추후 OCR을 적용하여 이미지 기반 PDF의 텍스트 인식 기능 추가
+    
 ##### DevExpress 적용
 - WPF 앱을 윈폼 앱처럼 UI 화면을 구성하기 위해서 사용하는 UI 컴포넌트
 - https://www.devexpress.com/ 에서 Trial 설치
@@ -575,5 +579,67 @@ public partial class App: System.Windows.Application {
     </dxe:ProgressBarEdit.StyleSettings>
 </dxe:ProgressBarEdit>
 ```
+
+- 실행 결과
+
+#### 추가 수정사항
+
+##### Local LLM 응답 속도 개선
+
+* Ollama Local LLM 사용 시 질문에 따라 답변 생성 시간이 길어지는 현상 확인
+* 처리 구간별 실행 시간을 측정하여 병목 구간 확인
+
+  * 벡터 검색 시간
+  * 검색된 Chunk 수
+  * LLM에 전달되는 글자 수
+  * Ollama 답변 생성 시간
+  * 전체 처리 시간
+* 측정 결과 벡터 검색은 약 `0.25초`, Ollama 답변 생성은 약 `16.91초`가 소요되어 LLM 답변 생성 과정이 주요 병목임을 확인
+* 검색 결과 수를 `top_k=5`에서 `top_k=3`으로 조정하여 LLM에 전달되는 문맥 크기 축소
+* RAG 문서 검색 목적에 맞게 Ollama 답변 생성 옵션 최적화
+
+  * `think=False` : 별도의 추론 과정 비활성화
+  * `num_predict=100` : 최대 답변 생성 길이 제한
+  * `temperature=0.2` : 문서 내용을 기반으로 일관된 답변을 생성하도록 설정
+  * `keep_alive='10m'` : 모델을 일정 시간 메모리에 유지하여 반복 질문 시 로딩 시간 감소
+* 프롬프트에 `답변은 핵심 내용만 2~3문장으로 간결하게 작성하세요.` 조건 추가
+* 최적화 후 동일한 문서 질의에서 답변 생성 시간이 약 `0.74초`까지 단축됨
+
+```python
+response = ollama.chat(
+    model='qwen3.5:2b',
+    messages=[
+        {
+            'role': 'user',
+            'content': prompt
+        }
+    ],
+    think=False,
+    options={
+        'num_predict': 100,
+        'temperature': 0.2
+    },
+    keep_alive='10m'
+)
+```
+
+##### 답변 표시 방식 개선
+
+![alt text](image-454.png)
+
+* 질문 처리 중에는 `AI가 답변을 생성하고 있습니다...` 안내 문구 표시
+* 기존에는 AI 답변을 안내 문구 뒤에 추가하여 답변 완료 후에도 안내 문구가 남는 문제 발생
+* 응답 완료 시 `TxtAnswer`의 내용을 AI 답변으로 교체하도록 수정
+
+```csharp
+// 수정 전
+TxtAnswer.Text += askResponse.answer + Environment.NewLine;
+
+// 수정 후
+TxtAnswer.Text = askResponse.answer;
+```
+
+* 답변 생성 중에는 진행 상태를 표시하고, 응답 완료 후에는 실제 AI 답변만 화면에 출력되도록 개선
+
 
 - 실행 결과
