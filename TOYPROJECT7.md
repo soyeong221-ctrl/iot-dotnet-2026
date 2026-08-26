@@ -1,7 +1,3 @@
-
-
-https://github.com/user-attachments/assets/2e23733b-7e2c-4b29-b2af-53aecc3ebc96
-
 # 토이 프로젝트 7
 
 ## AI 문서검색·질의응답 시스템
