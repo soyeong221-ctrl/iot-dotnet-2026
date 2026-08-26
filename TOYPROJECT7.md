@@ -1,3 +1,7 @@
+
+
+https://github.com/user-attachments/assets/2e23733b-7e2c-4b29-b2af-53aecc3ebc96
+
 # 토이 프로젝트 7
 
 ## AI 문서검색·질의응답 시스템
@@ -562,7 +566,7 @@ public partial class App: System.Windows.Application {
 
 - 실행 결과
 
-
+https://github.com/user-attachments/assets/469132b4-930b-42fd-876a-e5180661db75
 
 #### 추가 작업
 
@@ -581,6 +585,8 @@ public partial class App: System.Windows.Application {
 ```
 
 - 실행 결과
+
+https://github.com/user-attachments/assets/5f2374ab-2eb4-4292-babb-757a1856685c
 
 #### 추가 수정사항
 
@@ -641,5 +647,7 @@ TxtAnswer.Text = askResponse.answer;
 
 * 답변 생성 중에는 진행 상태를 표시하고, 응답 완료 후에는 실제 AI 답변만 화면에 출력되도록 개선
 
-
 - 실행 결과
+
+https://github.com/user-attachments/assets/4a839b58-b76d-4e85-9776-3598feec7af2
+
