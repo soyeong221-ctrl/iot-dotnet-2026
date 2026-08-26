@@ -557,7 +557,8 @@ public partial class App: System.Windows.Application {
 ![alt text](image-452.png)
 
 - 실행 결과
-
+- 
+https://github.com/user-attachments/assets/1455b823-dd3f-48f4-b1f7-cdb50f56ab4f
 
 
 #### 추가 작업
@@ -576,3 +577,6 @@ public partial class App: System.Windows.Application {
 ```
 
 - 실행 결과
+
+https://github.com/user-attachments/assets/d4259d88-e2b4-409d-a65d-d068b7981263
+
