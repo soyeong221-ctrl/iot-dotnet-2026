@@ -1,10 +1,3 @@
-''' 
-fileName : total_interface.py
-description : 아두이노 + RPi + MQTT + ESP32-CAM YOLO 
-lastdate : 2026-08-14 10:14
-writer : Hugo MG Sung
-'''
-
 ### 패키지 import
 import cv2
 import json
@@ -18,16 +11,18 @@ from ultralytics import YOLO
 
 ### MQTT 설정 
 PUB_ID = 'IOT52-RPI'
-BROKER = '210.119.12.52'
+BROKER = 'your_mqtt_broker'
 PORT = 1883
 
-MQTT_USERNAME = 'root'
-MQTT_PASSWORD = 'mqtt123456'
+MQTT_USERNAME = 'your_username'
+MQTT_PASSWORD = 'your_password'
 
 # Arduino -> Raspberry Pi -> Windows PUBLISH
 DATA_TOPIC = 'smartfactory/52/data'
 # Windows -> Raspberry Pi -> Arduino PUBLISH
 CONTROL_TOPIC = 'smartfactory/52/control'
+# Raspberry Pi -> Windows PUBLISH
+YOLO_TOPIC = 'smartfactory/52/yolo'
 
 ### Arduino Serial 설정
 SERIAL_PORT = '/dev/ttyACM0'  # 컨베이어벨트 아두이노 연결 포트
@@ -48,6 +43,12 @@ ROI_X1 = 130
 ROI_Y1 = 250
 ROI_X2 = 636
 ROI_Y2 = 507
+
+# YOLO MQTT 중복전송 방지
+YOLO_SEND_INTERVAL = 5.0     # 동일 클래스 재전송 제한 시간(초)
+
+last_yolo_class = None  # 마지막 인식된 클래스명
+last_yolo_time = 0 
 
 ### Arduino 시리얼 데이터 전송 함수
 def send_to_arduino(command: str):
@@ -89,9 +90,19 @@ def on_message(client, userdata, message):
         print(f'[MQTT SUB] ' 
             f'topic={message.topic}, '
             f'payload={payload}'
-        )        
-        # MQTT로 전달받은 명령을 Arduino로 전송
-        send_to_arduino(payload)
+        )
+
+        # JSON 문자열 Python Dictionary
+        data = json.loads(payload)
+
+        # control 키에 대한 값만 추출
+        control = data.get('control')  # T, S 만 전달
+
+        if control:
+            # MQTT로 전달받은 명령을 Arduino로 전송
+            send_to_arduino(control)  # 윈도우에서 비상정지 등 메시지를 전달받아서 아두이노 제어
+    except json.JSONDecodeError as error:
+        print(f'JSON 파싱 에러 : {error}')
 
     except Exception as error:
         print(f'MQTT 메시지 에러 : {error}')
@@ -122,6 +133,20 @@ def publish_arduino_data(client, serial_data: str):
     )
 
     print(f'[MQTT PUB] {json_payload}')
+
+### YOLO 결과 배포 함수
+def publish_yolo_data(client, class_name, confidence):
+    payload = {
+        'deviceId': PUB_ID,
+        'timestamp': datetime.now().isoformat(),
+        'color': class_name,
+        'confidence': round(confidence, 2) 
+        }
+    
+    json_payload = json.dumps(payload, ensure_ascii=False)
+
+    client.publish(YOLO_TOPIC, payload=json_payload, qos=1)
+    print(f'[YOLO MQTT PUB] {json_payload}')
 
 ### Arduino 시리얼통신 전달 데이터 스레드로 처리
 def serial_receive_thread(client):
@@ -160,8 +185,11 @@ def connect_camera():
     return cap
 
 ### YOLO 물체인식 처리 함수
-def yolo_process():
+def yolo_process(client):
     global running
+    # Deley용 글로벌 변수추가
+    global last_yolo_class
+    global last_yolo_time
 
     cap = connect_camera()
 
@@ -243,6 +271,25 @@ def yolo_process():
                     f'{confidence:.2f}'
                 )
 
+                curr_time = time.time()   # 현재 시간 할당
+
+                # 쿨다운 시간 후에 재인식
+                if (class_name != last_yolo_class or
+                   curr_time - last_yolo_time >= YOLO_SEND_INTERVAL):
+
+                    publish_yolo_data(client, class_name, confidence)  # MQTT 배포
+                    # 아두이노 시리얼 데이터 보내는 작업 
+                    serial_data = 'R'
+                    if (class_name == 'red'): serial_data = 'R'
+                    elif (class_name == 'green'): serial_data = 'G'
+                    elif (class_name == 'blue'): serial_data = 'B'
+
+                    # print(f'serial_data = {serial_data} ')
+                    send_to_arduino(serial_data)
+
+                    last_yolo_class = class_name
+                    last_yolo_time = curr_time
+
         # 영상 출력
         cv2.imshow('ESP32-CAM YOLO', result_frame)
         # q 입력 시 종료
@@ -313,8 +360,8 @@ def main():
         )
         serial_thread.start()
 
-        # YOLO 실행
-        yolo_process()
+        # YOLO 실행 MQTT 클라이언트 추가
+        yolo_process(client)
 
     except KeyboardInterrupt:
         print('\n프로그램 종료')

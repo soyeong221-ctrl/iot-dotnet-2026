@@ -10,7 +10,7 @@
 
 **Ai-Thinker ESP32-CAM**
 
-ESP32 기반 프로세서 사용, WiFi, 블루투스를 지원하는 아두이노 호한보드
+ESP32 기반 프로세서 사용, WiFi, 블루투스를 지원하는 아두이노 호환보드
 
 ![](assets/20260810_121636_image.png)
 
@@ -36,9 +36,9 @@ ESP32 기반 프로세서 사용, WiFi, 블루투스를 지원하는 아두이�
 
 #### ESP32-CAM 사용이유
 
-- 라즈베리파이 직접 카메를 장착하려면 = RPi Camera 또는 USB 웹캠 가능
+- 라즈베리파이 직접 카메라를 장착하려면 = RPi Camera 또는 USB 웹캠 가능
 - 컨베이어벨트 등 산업장비에 설치, 독립적으로 스트리밍을 가능하게 하기 위해서 사용
-- 저사양으로 테스트용으로 사용. 실체 산업현장용은 고비용 고사양
+- 저사양으로 테스트용으로 사용. 실제 산업현장용은 고비용 고사양
 
 ![](assets/20260811_092552_image.png)
 
@@ -79,18 +79,18 @@ Arduino IDE or Visual Studio Code - Platform IO 확장으로 사용등 여러 �
   - Upload: 보드 업로드
   - Monitor: 시리얼 모니터
   - Upload and Monitor: 업로드 후 시리얼 모니터 오픈
-  - Clearn / Full Clearn: 소스 정리
+  - Clean / Full Clean: 소스 정리
   - Devices: 보드 정보 확인
 
 ![](assets/20260811_094510_image.png)
 
-- 윈도우 장치관리자에서 시리일포트 확인, 라즈베리파이에서는 /dev/ttyUSB*
+- 윈도우 장치관리자에서 시리얼포트 확인, 라즈베리파이에서는 /dev/ttyUSB*
 
 ##### ESP32-CAM 동작확인
 
 ![](assets/20260811_100951_image.png)
 
-- [platformio.ini](./toyproject/ToyProjects06/platformio_part/test_esp32cam) 작성 - 버전 변경후 저장, 프로젝트 재구성 시간소요
+- [platformio.ini](./toyproject/ToyProjects06/platformio_part/esp32cam/platformio.ini) 작성 - 버전 변경후 저장, 프로젝트 재구성 시간소요
 - 기본동작 소스 작성
 
 ```cpp
@@ -132,7 +132,7 @@ void loop() {
 
 ##### ESP32-CAM 웹서버 예제
 
-- [소스](./toyproject/ToyProjects06/platformio_part/test_esp32cam/src/main.cpp)
+- [소스](./toyproject/ToyProjects06/platformio_part/esp32cam/src/main.cpp)
 - 빌드, 업로드 후 모니터
 - ![alt text](image-406.png)
 - 테스트
@@ -148,8 +148,8 @@ void loop() {
 
 #### Python OpenCV, YOLO 연계
 
-- 기본적인 [OpenCV 소스](./toyproject/ToyProjects06/raspberrypi_part/test_opencv.py) 동작 확인
-- 기본적인 [YOLO 소스](./toyproject/ToyProjects06/raspberrypi_part/test_yolo.py) 동작 확인
+- 기본적인 [OpenCV 소스](./toyproject/ToyProjects06/raspberrypi_part/tests/test_opencv.py) 동작 확인
+- 기본적인 [YOLO 소스](./toyproject/ToyProjects06/raspberrypi_part/tests/test_yolo.py) 동작 확인
 
 ![alt text](image-408.png)
 
@@ -199,7 +199,7 @@ $ pip install numpy --break-system-packages
 
 ```bash
 (.venv) $ pip install opencv-python
-(.venv) $ pip install ultraytics # YOLO 설치 하면서 PyTorch 같이 설치
+(.venv) $ pip install ultralytics # YOLO 설치 하면서 PyTorch 같이 설치
 ```
 
 - Raspberry pi에서 YOLO를 설치하려면 아래의 명령으로 진행할 것
@@ -207,7 +207,7 @@ $ pip install numpy --break-system-packages
 ```bash
 (.venv) $ pip install opencv-python
 (.venv) $ pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-(.venv) $ pip install ultraytics # YOLO 만 설치
+(.venv) $ pip install ultralytics # YOLO 만 설치
 ```
 
 #### YOLO 물체인식
@@ -224,7 +224,7 @@ $ pip install numpy --break-system-packages
 
 #### Python OpenCV 캡처 기능
 
-- [소스](./toyproject/ToyProjects06/raspberrypi_part/test_capture.py)
+- [소스](./toyproject/ToyProjects06/raspberrypi_part/tests/test_capture.py)
 
 ![alt text](image-411.png)
 
@@ -244,7 +244,7 @@ YOLO 커스텀 학습이 필요.
 ##### 라벨링 툴
 
 - [Roboflow](https://roboflow.com/) - 유료 라벨링 사이트
-- [cvat.ai](https://www.cvat.ai/) - 유료 라벨링 사이트. export 시 결재 팝업
+- [cvat.ai](https://www.cvat.ai/) - 유료 라벨링 사이트. export 시 결제 팝업
 - [labelImg](https://github.com/HumanSignal/labelImg) - 무료툴 Github 오픈소스
 
 ##### LabelImg 툴 사용 라벨링
@@ -269,7 +269,7 @@ YOLO 커스텀 학습이 필요.
   - data.yaml 절대경로로 작성
   - Utralytics 패키지 폴더 settings.json 파일 내
     - 윈도우 경우 C:\Users\User\AppData\Roaming\Ultralytics\settings.json
-    - `datasets_dir` 경로 훈련시킬 데이터셋 경로로 지정, weights_dir, russ_dir
+    - `datasets_dir` 경로 훈련시킬 데이터셋 경로로 지정, weights_dir, runs_dir
 
 ```bash
 yolo detect train data=C:/..../python_folder/data.yaml model=yolo11n.pt epochs=100 imgsz=640
@@ -473,9 +473,10 @@ autostart 사용할 것
 
 ##### Python YOLO 소스와 MQTT 통신 소스 통합
 
-- data_interface.py 와 test_yolo.py 소스 통합
-- 물체인식 동시에 MQTT로 데이터 Publish
-- [total_interface.py](./toyproject/ToyProjects06/raspberrypi_part/total_interface.py)
+- 기존 MQTT 데이터 처리 코드와 YOLO 객체 인식 코드를 통합
+  - data_interface.py 와 test_yolo.py
+- 물체 인식 결과를 MQTT로 Publish하고 Arduino로 Serial 데이터 전송
+- [최종 통합 소스](./toyproject/ToyProjects06/raspberrypi_part/main.py)
 
 ![alt text](image-422.png)
 
@@ -570,10 +571,10 @@ https://github.com/user-attachments/assets/ca63ff07-7a7c-4880-b2e5-ee8844b3c621
 
 ![alt text](image-429.png)
 
-##### 수정 소스
+##### 최종 소스
 
-- [RPi Python](./toyproject/ToyProjects06/raspberrypi_part/total_interface2.py)
-- [Arduino](./toyproject/ToyProjects06/arduino_part/sortingmachine2.ino)
+- [RPi Python](./toyproject/ToyProjects06/raspberrypi_part/main.py)
+- [Arduino](./toyproject/ToyProjects06/arduino_part/sortingmachine.ino)
 - [Unity](./toyproject/ToyProjects05/unity_part/UnityDigitalTwin/Assets/Scripts/SmartFactoryMqttClient.cs)
 
 

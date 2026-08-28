@@ -1,4 +1,4 @@
-path: C:/SourceBank/iot-dotnet-2026/toyproject/ToyProjects06/raspberrypi_part/dataset
+path: ./dataset
 
 train: images/train
 val: images/val

@@ -6,8 +6,8 @@
 // ============================================================
 // WiFi 설정
 // ============================================================
-const char* ssid = "pknu2G";
-const char* password = "iotiot1234";
+const char* ssid = "your_wifi_ssid";
+const char* password = "your_wifi_password";
 
 // ============================================================
 // AI Thinker ESP32-CAM PIN 설정

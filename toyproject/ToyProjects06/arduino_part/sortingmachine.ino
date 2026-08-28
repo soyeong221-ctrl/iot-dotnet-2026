@@ -44,6 +44,9 @@ int r, g, b, sum;                   // 색상 값을 사용하기 위한 변환�
 int railSpeed = 100;                 // 레일 기본 속도, 초기값은 160. 12V로는 70가능. 9V일때는 80이하 불가능
 char color = 'N';                   // 확인 색상 (기본 N)
 
+// 비상정지 상태 변수
+bool emergencyStop = false; 
+
 // 초기화
 void setup() {
   Serial.begin(19200);
@@ -77,11 +80,17 @@ void loop() {
 
     // 개행문자 무시
     if (command == '\n' || command == '\r') return;
-
-    processSerialCommand(command);
+     
+    processSerialCommand(command);    
     return;
   }
-  // analogWrite(PIN_DC_SPEED, 0);   // 벨트끄기. 나중에 주석 처리
+
+  // 비상정지 상태면 다른 동작 전부 중지
+  if (emergencyStop) {
+    analogWrite(PIN_DC_SPEED, 0);
+    return;
+  }
+  //analogWrite(PIN_DC_SPEED, 0);   // 벨트끄기. 나중에 주석 처리
 
   // 제품 적재여부 확인
   if (digitalRead(PIN_IR) == HIGH) return; // loop() 함수를 빠져나가지만 아두이노가 loop() 함수를 다시 실행
@@ -140,9 +149,54 @@ void processSerialCommand(char cmd) {
   if (cmd == 'r') cmd = 'R';
   if (cmd == 'g') cmd = 'G';
   if (cmd == 'b') cmd = 'B';
+  if (cmd == 's') cmd = 'S';
+  if (cmd == 't') cmd = 'T';
 
+  // 비상 정지
+  if (cmd == 'T') {
+    emergencyStop = true;
+
+    // 벨트 즉시 정지
+    analogWrite(PIN_DC_SPEED, 0);
+    // 서보모터 90도 이동
+    servo.attach(PIN_SERVO);
+    servo.write(102);
+
+    delay(500);
+    servo.detach();
+
+    // LED 끄기
+    pixels.clear();
+    pixels.show();
+
+    Serial.print("T"); // MQTT로 재전송
+    return;
+  }
+
+  // 재가동
+  if (cmd == 'S') {
+    emergencyStop = false;
+
+    // 서보모터 초기위치로 
+    servo.attach(PIN_SERVO);
+    servo.write(2);
+
+    delay(500);
+    servo.detach();
+
+    // LED on
+    pixels.clear();
+    pixels.show();
+
+    analogWrite(PIN_DC_SPEED, railSpeed);
+    Serial.print("S");
+    return;
+  }
 
   if (cmd == 'R' || cmd == 'G' || cmd == 'B') {
+    // 비상정지 상태에는 감지 무시
+    if (emergencyStop) return;
+    
     color = cmd;
 
     // 컨베이어 정지
