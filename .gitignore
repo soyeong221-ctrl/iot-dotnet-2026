@@ -759,4 +759,5 @@ runs/
 # 모델파일은 제외
 *.pth
 # 100메가 넘는파일 반드시 제외
-day11/yolo11x.pt  
+day11/yolo11x.pt  wpf/WpfPracticeSolution/WpfBusanFoodApp.zip
+wpf/WpfPracticeSolution/WpfBusanFoodApp.zip
